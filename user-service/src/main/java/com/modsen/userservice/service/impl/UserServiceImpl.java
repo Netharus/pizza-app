@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
         return userMapper
                 .fromUserToUsersResponseDto(userRepository
                         .findById(id)
-                        .orElseThrow(UserNotFoundException::new));
+                        .orElseThrow(() -> new UserNotFoundException(id)));
     }
 
 }
