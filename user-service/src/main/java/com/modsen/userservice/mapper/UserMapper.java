@@ -9,7 +9,7 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
 
-        User fromUserCreateDto(UsersCreateDto userCreateDto);
+    User fromUserCreateDto(UsersCreateDto userCreateDto);
 
-        UsersResponseDto fromUserToUsersResponseDto(User user);
+    UsersResponseDto fromUserToUsersResponseDto(User user);
 }
