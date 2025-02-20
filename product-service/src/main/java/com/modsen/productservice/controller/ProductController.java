@@ -1,7 +1,11 @@
 package com.modsen.productservice.controller;
 
+import com.modsen.productservice.domain.Category;
+import com.modsen.productservice.dto.CategoryCreateDto;
 import com.modsen.productservice.dto.CategoryResponseDto;
+import com.modsen.productservice.dto.CategoryUpdateDto;
 import com.modsen.productservice.dto.PageContainerDto;
+import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.dto.ProductResponseDto;
 import com.modsen.productservice.dto.ProductStandaloneCreateDto;
 import com.modsen.productservice.dto.ProductUpdateDto;
@@ -25,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
@@ -36,7 +42,7 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PageContainerDto<ProductResponseDto> findAllProducts(@PageableValid @PageableDefault(sort = "ID", direction = Sort.Direction.DESC) Pageable pageable,
+    public PageContainerDto<ProductResponseDto> findAllProducts(@PageableValid @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                                                 @RequestParam(defaultValue = "") String keyword) {
         return productService.findAll(pageable, keyword);
     }
@@ -56,7 +62,7 @@ public class ProductController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public ProductResponseDto updateProduct(@Valid @RequestBody ProductUpdateDto productUpdateDto) {
-        return productService.updateProduct(productUpdateDto,productUpdateDto.categoryId()==null?null:categoryService.getCategoryById(productUpdateDto.categoryId()));
+        return productService.updateProduct(productUpdateDto, productUpdateDto.categoryId() == null ? null : categoryService.getCategoryById(productUpdateDto.categoryId()));
     }
 
     @DeleteMapping("/{id}")
@@ -65,5 +71,39 @@ public class ProductController {
         productService.deleteProduct(id);
     }
 
+    @GetMapping("/categories")
+    @ResponseStatus(HttpStatus.OK)
+    public PageContainerDto<CategoryResponseDto> findAllCategories(@PageableValid @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                   @RequestParam(defaultValue = "") String keyword) {
+        return categoryService.findAll(pageable, keyword);
+    }
 
+    @GetMapping("/categories/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryResponseDto findCategoryById(@PathVariable Long id) {
+        return categoryService.getCategoryResponseDtoById(id);
+    }
+
+    @PostMapping("/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryResponseDto createCategory(@Valid @RequestBody CategoryCreateDto categoryCreateDto) {
+        Category category = categoryService.createCategory(categoryCreateDto);
+        if (!categoryCreateDto.products().isEmpty()) {
+            List<ProductForCategoryResponseDto> productResponseDtos = categoryCreateDto.products().stream().map(productCreateDto -> productService.createProduct(productCreateDto, category)).toList();
+            return categoryService.getCategoryResponseDto(category, productResponseDtos);
+        }
+        return categoryService.getCategoryResponseDtoById(category.getId());
+    }
+
+    @PutMapping("/categories")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryResponseDto updateCategory(@Valid @RequestBody CategoryUpdateDto categoryUpdateDto) {
+        return categoryService.updateCategory(categoryUpdateDto);
+    }
+
+    @DeleteMapping("/categories/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+    }
 }
