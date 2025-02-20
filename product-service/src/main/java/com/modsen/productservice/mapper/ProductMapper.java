@@ -5,6 +5,7 @@ import com.modsen.productservice.domain.Product;
 import com.modsen.productservice.dto.CategoryForProductResponseDto;
 import com.modsen.productservice.dto.PageContainerDto;
 import com.modsen.productservice.dto.ProductCreateDto;
+import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.dto.ProductResponseDto;
 import com.modsen.productservice.dto.ProductStandaloneCreateDto;
 import com.modsen.productservice.dto.ProductUpdateDto;
@@ -37,4 +38,8 @@ public interface ProductMapper {
     CategoryForProductResponseDto categoryToCategoryForProductResponseDto(Category categoryPage);
 
     List<ProductResponseDto> toProductResponseDtoList(List<Product> productList);
+
+    @Mapping(target = "productId", source = "id")
+    @Mapping(target = "productName", source = "name")
+    ProductForCategoryResponseDto productToCategoryResponseDto(Product product);
 }
