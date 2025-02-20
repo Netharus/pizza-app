@@ -6,10 +6,12 @@ import java.time.LocalDateTime;
 
 public record ErrorResponseDto(
         HttpStatus httpStatus,
+        int statusCode,
+        String path,
         String message,
         LocalDateTime timestamp
 ) {
-    public ErrorResponseDto(HttpStatus httpStatus, String message) {
-        this(httpStatus, message, LocalDateTime.now());
+    public ErrorResponseDto(HttpStatus httpStatus, String message, String path) {
+        this(httpStatus, httpStatus.value(), path, message, LocalDateTime.now());
     }
 }
