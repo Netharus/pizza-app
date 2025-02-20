@@ -6,8 +6,8 @@ import java.util.List;
 
 @Builder
 public record CategoryResponseDto(
-        Long id,
-        String name,
+        Long categoryId,
+        String categoryName,
         List<ProductForCategoryResponseDto> products
 ) {
 }
