@@ -34,5 +34,7 @@ public interface ProductMapper {
 
     @Mapping(target = "categoryId", source = "id")
     @Mapping(target = "categoryName", source = "name")
-    CategoryForProductResponseDto categoryToCategoryForProductResponseDto(Category category);
+    CategoryForProductResponseDto categoryToCategoryForProductResponseDto(Category categoryPage);
+
+    List<ProductResponseDto> toProductResponseDtoList(List<Product> productList);
 }
