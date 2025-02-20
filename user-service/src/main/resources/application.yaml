@@ -4,7 +4,7 @@ spring:
   application:
     name: user-service
   config:
-    import: optional:file:D:/Study/Modsen/pizza-practice/pizza-app/docker/.env[.properties]
+    import: optional:file:./docker/.env[.properties]
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${USER_DB_URL}
