@@ -20,6 +20,8 @@ public interface OrderMapper {
 
     OrderItemResponseDto toOrderItemResponseDto(OrderItem orderItem);
 
+    List<OrderResponseDto> toOrderResponseDtoList(List<Order> orders);
+
     @Mapping(target = "orderItemResponseDtoList", source = "order.orderItems")
     @Mapping(target = "orderStatus", source = "order.status")
     OrderResponseDto toOrderResponseDto(Order order);

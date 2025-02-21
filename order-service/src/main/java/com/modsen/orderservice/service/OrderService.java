@@ -18,6 +18,5 @@ public interface OrderService {
 
     OrderResponseDto findById(Long id);
 
-    PageContainerDto<OrderResponseDto> findByUserId(Long userId);
-
+    PageContainerDto<OrderResponseDto> findByUserId(Long userId, Pageable pageable);
 }
