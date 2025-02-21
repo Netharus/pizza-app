@@ -1,0 +1,41 @@
+server:
+  port: ${API_GATEWAY_PORT}
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:${EUREKA_SERVER_PORT}/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: optional:file:./docker/.env[.properties]
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: users
+            uri: lb://user-service
+            predicates:
+              - Path=/users/**
+            filters:
+              - PrefixPath=/api/v1
+          - id: orders
+            uri: lb://order-service
+            predicates:
+              - Path=/orders/**
+            filters:
+              - PrefixPath=/api/v1
+          - id: products
+            uri: lb://product-service
+            predicates:
+              - Path=/products/**
+            filters:
+              - PrefixPath=/api/v1
+          - id: categories
+            uri: lb://product-service
+            predicates:
+              - Path=/categories/**
+            filters:
+              - PrefixPath=/api/v1/products
