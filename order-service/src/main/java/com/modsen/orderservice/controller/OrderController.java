@@ -32,7 +32,7 @@ public class OrderController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public PageContainerDto<OrderResponseDto> getOrders(@PageableValid @PageableDefault(sort = "id") Pageable pageable,
-                                                        @RequestParam String keyword) {
+                                                        @RequestParam(defaultValue = "") String keyword) {
         return orderService.findAll(pageable, keyword);
     }
 
