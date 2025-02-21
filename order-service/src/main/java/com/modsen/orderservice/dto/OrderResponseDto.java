@@ -12,6 +12,7 @@ public record OrderResponseDto(
         Long userId,
         LocalDateTime orderDate,
         OrderStatus orderStatus,
-        List<OrderItemResponseDto> orderItemResponseDtoList
+        List<OrderItemResponseDto> orderItemResponseDtoList,
+        Double totalPrice
 ) {
 }

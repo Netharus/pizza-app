@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record OrderItemCreateDto(
-    Long productId,
-    int quantity
+        Long productId,
+        int quantity
 ) {
 }
