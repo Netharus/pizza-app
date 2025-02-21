@@ -16,3 +16,7 @@ spring:
     show-sql: true
   liquibase:
     change-log: db/changelog/db.changelog-master.yaml
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:${EUREKA_SERVER_PORT}/eureka/
