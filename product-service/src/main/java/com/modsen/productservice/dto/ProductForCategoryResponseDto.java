@@ -4,8 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record ProductForCategoryResponseDto(
-        Long id,
-        String name,
+        Long productId,
+        String productName,
         double price
 ) {
 }
