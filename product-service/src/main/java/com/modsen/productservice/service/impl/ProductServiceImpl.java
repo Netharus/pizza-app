@@ -3,6 +3,8 @@ package com.modsen.productservice.service.impl;
 import com.modsen.productservice.domain.Category;
 import com.modsen.productservice.domain.Product;
 import com.modsen.productservice.dto.PageContainerDto;
+import com.modsen.productservice.dto.PriceRequestDto;
+import com.modsen.productservice.dto.PriceResponseDto;
 import com.modsen.productservice.dto.ProductCreateDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.dto.ProductResponseDto;
@@ -20,7 +22,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -95,6 +99,18 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(Long id) {
 
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PriceResponseDto getActualPrice(PriceRequestDto priceRequestDto) {
+        Map<Long, Double> priceMap = new HashMap<>();
+        priceRequestDto.productIds().forEach(productId -> {
+            Product product = getProduct(productId);
+            priceMap.put(product.getId(), product.getPrice());
+        });
+        return new PriceResponseDto(priceMap);
+    }
+
 
     @Transactional
     protected Product getProduct(Long id) {

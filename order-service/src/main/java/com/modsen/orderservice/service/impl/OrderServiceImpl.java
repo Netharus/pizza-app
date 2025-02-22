@@ -1,5 +1,6 @@
 package com.modsen.orderservice.service.impl;
 
+import com.modsen.orderservice.client.UserClient;
 import com.modsen.orderservice.domain.Order;
 import com.modsen.orderservice.dto.OrderCreateDto;
 import com.modsen.orderservice.dto.OrderResponseDto;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,33 +24,42 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final UserClient userClient;
 
     @Override
+    @Transactional
     public Order createOrder(OrderCreateDto orderCreateDto) {
-        return null;
+        userClient.findById(orderCreateDto.userId());
+        Order order = orderMapper.fromOrderCreateDtoToOrder(orderCreateDto);
+        return orderRepository.save(order);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageContainerDto<OrderResponseDto> findAll(Pageable pageable, String keywords) {
         return orderMapper.toOrderResponseDtoPage(orderRepository.findAll(pageable, keywords));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderResponseDto> findAll() {
         return orderMapper.toOrderResponseDtoList(orderRepository.findAll());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderResponseDto findById(Long id) {
         return orderMapper.toOrderResponseDto(getById(id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageContainerDto<OrderResponseDto> findByUserId(Long userId, Pageable pageable) {
         return orderMapper.toOrderResponseDtoPage(orderRepository.findByUserId(userId, pageable));
     }
 
-    private Order getById(Long id) {
-        return orderRepository.findById(id).orElseThrow(()->new OrderNotFoundException("There is no order with id " + id));
+    @Transactional
+    protected Order getById(Long id) {
+        return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("There is no order with id " + id));
     }
 }

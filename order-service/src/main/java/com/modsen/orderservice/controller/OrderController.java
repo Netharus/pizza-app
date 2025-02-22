@@ -1,20 +1,22 @@
 package com.modsen.orderservice.controller;
 
+import com.modsen.orderservice.domain.Order;
 import com.modsen.orderservice.dto.OrderCreateDto;
 import com.modsen.orderservice.dto.OrderResponseDto;
 import com.modsen.orderservice.dto.PageContainerDto;
+import com.modsen.orderservice.mapper.OrderMapper;
 import com.modsen.orderservice.service.OrderItemService;
 import com.modsen.orderservice.service.OrderService;
 import com.modsen.orderservice.validator.PageableValid;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,6 +30,8 @@ public class OrderController {
     private final OrderService orderService;
 
     private final OrderItemService orderItemService;
+
+    private final OrderMapper orderMapper;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -45,13 +49,20 @@ public class OrderController {
     @GetMapping("/user/{id}")
     @ResponseStatus(HttpStatus.OK)
     public PageContainerDto<OrderResponseDto> getOrdersByUserId(@PageableValid @PageableDefault(sort = "id") Pageable pageable,
-                                                                @PathVariable Long id){
+                                                                @PathVariable Long id) {
         return orderService.findByUserId(id, pageable);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderResponseDto createOrder(@Valid OrderCreateDto orderCreateDto) {
-        return null;
+    public OrderResponseDto createOrder(@Valid @RequestBody OrderCreateDto orderCreateDto) {
+        Order order = orderService.createOrder(orderCreateDto);
+
+        if (!orderCreateDto.orderItemsCreateDtoList().isEmpty()) {
+            order.setOrderItems(orderItemService.createOrderItems(orderCreateDto.orderItemsCreateDtoList(), order));
+        }
+
+        return orderMapper.toOrderResponseDto(order);
     }
+
 }

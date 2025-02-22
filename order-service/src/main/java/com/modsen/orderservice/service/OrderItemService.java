@@ -1,10 +1,12 @@
 package com.modsen.orderservice.service;
 
-import com.modsen.orderservice.dto.OrderCreateDto;
-import com.modsen.orderservice.dto.OrderItemResponseDto;
+import com.modsen.orderservice.domain.Order;
+import com.modsen.orderservice.domain.OrderItem;
+import com.modsen.orderservice.dto.OrderItemCreateDto;
+
+import java.util.List;
 
 public interface OrderItemService {
 
-    OrderItemResponseDto createOrderItem(OrderCreateDto orderCreateDto);
-
+    List<OrderItem> createOrderItems(List<OrderItemCreateDto> orderItemCreateDtos, Order order);
 }

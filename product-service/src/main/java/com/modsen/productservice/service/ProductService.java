@@ -2,6 +2,8 @@ package com.modsen.productservice.service;
 
 import com.modsen.productservice.domain.Category;
 import com.modsen.productservice.dto.PageContainerDto;
+import com.modsen.productservice.dto.PriceRequestDto;
+import com.modsen.productservice.dto.PriceResponseDto;
 import com.modsen.productservice.dto.ProductCreateDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.dto.ProductResponseDto;
@@ -26,4 +28,5 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
+    PriceResponseDto getActualPrice(PriceRequestDto priceRequestDto);
 }

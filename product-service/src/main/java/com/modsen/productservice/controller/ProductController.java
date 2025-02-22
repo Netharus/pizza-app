@@ -5,6 +5,8 @@ import com.modsen.productservice.dto.CategoryCreateDto;
 import com.modsen.productservice.dto.CategoryResponseDto;
 import com.modsen.productservice.dto.CategoryUpdateDto;
 import com.modsen.productservice.dto.PageContainerDto;
+import com.modsen.productservice.dto.PriceRequestDto;
+import com.modsen.productservice.dto.PriceResponseDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.dto.ProductResponseDto;
 import com.modsen.productservice.dto.ProductStandaloneCreateDto;
@@ -105,5 +107,11 @@ public class ProductController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
+    }
+
+    @PostMapping("/actual_prices")
+    @ResponseStatus(HttpStatus.OK)
+    public PriceResponseDto getActualPrices(@RequestBody @Valid PriceRequestDto priceRequestDto) {
+        return productService.getActualPrice(priceRequestDto);
     }
 }

@@ -16,6 +16,17 @@ spring:
     show-sql: true
   liquibase:
     change-log: db/changelog/db.changelog-master.yaml
+  cloud:
+    openfeign:
+      client:
+        config:
+          productClient:
+            url: ${PRODUCT_GATEWAY_URL}
+            error-decoder: com.modsen.orderservice.handler.CustomErrorDecoder
+          userClient:
+            url: ${USER_GATEWAY_URL}
+            error-decoder: com.modsen.orderservice.handler.CustomErrorDecoder
+
 eureka:
   client:
     serviceUrl:
