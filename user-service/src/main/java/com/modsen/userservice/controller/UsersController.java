@@ -28,9 +28,4 @@ public class UsersController {
         return userService.findUserById(id);
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UsersResponseDto createUser(@Valid @RequestBody UsersCreateDto usersCreateDto) {
-        return new UsersResponseDto(1L,"1","1","1","1");
-    }
 }
