@@ -40,4 +40,7 @@ public class OrderItem {
 
     @Column(nullable = false)
     private double price;
+
+    @Column(nullable = false)
+    private String productName;
 }
