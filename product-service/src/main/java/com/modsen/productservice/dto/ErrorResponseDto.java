@@ -14,4 +14,7 @@ public record ErrorResponseDto(
     public ErrorResponseDto(HttpStatus httpStatus, String message, String path) {
         this(httpStatus, httpStatus.value(), path, message, LocalDateTime.now());
     }
+    public ErrorResponseDto(String message) {
+        this(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(), "", message, LocalDateTime.now());
+    }
 }

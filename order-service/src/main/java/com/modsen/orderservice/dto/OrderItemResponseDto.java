@@ -6,6 +6,7 @@ import lombok.Builder;
 public record OrderItemResponseDto(
         Long id,
         Long productId,
+        String productName,
         int quantity,
         double price
 ) {

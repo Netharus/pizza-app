@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record PriceRequestDto(
+public record ProductRequestDto(
         @NotEmpty(message = " Product ids list can't be empty")
         List<Long> productIds
 ) {

@@ -9,4 +9,6 @@ import java.util.List;
 public interface OrderItemService {
 
     List<OrderItem> createOrderItems(List<OrderItemCreateDto> orderItemCreateDtos, Order order);
+
+    Boolean isProductUsed(Long productId);
 }

@@ -2,11 +2,11 @@ package com.modsen.productservice.service;
 
 import com.modsen.productservice.domain.Category;
 import com.modsen.productservice.dto.PageContainerDto;
-import com.modsen.productservice.dto.PriceRequestDto;
-import com.modsen.productservice.dto.PriceResponseDto;
+import com.modsen.productservice.dto.ProductRequestDto;
 import com.modsen.productservice.dto.ProductCreateDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.dto.ProductResponseDto;
+import com.modsen.productservice.dto.ProductResponseForOrderDto;
 import com.modsen.productservice.dto.ProductStandaloneCreateDto;
 import com.modsen.productservice.dto.ProductUpdateDto;
 import org.springframework.data.domain.Pageable;
@@ -28,5 +28,5 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
-    PriceResponseDto getActualPrice(PriceRequestDto priceRequestDto);
+    ProductResponseForOrderDto getProductData(ProductRequestDto productRequestDto);
 }

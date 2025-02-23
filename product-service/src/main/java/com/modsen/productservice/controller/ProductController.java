@@ -5,10 +5,10 @@ import com.modsen.productservice.dto.CategoryCreateDto;
 import com.modsen.productservice.dto.CategoryResponseDto;
 import com.modsen.productservice.dto.CategoryUpdateDto;
 import com.modsen.productservice.dto.PageContainerDto;
-import com.modsen.productservice.dto.PriceRequestDto;
-import com.modsen.productservice.dto.PriceResponseDto;
+import com.modsen.productservice.dto.ProductRequestDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.dto.ProductResponseDto;
+import com.modsen.productservice.dto.ProductResponseForOrderDto;
 import com.modsen.productservice.dto.ProductStandaloneCreateDto;
 import com.modsen.productservice.dto.ProductUpdateDto;
 import com.modsen.productservice.service.CategoryService;
@@ -109,9 +109,10 @@ public class ProductController {
         categoryService.deleteCategory(id);
     }
 
-    @PostMapping("/actual_prices")
+
+    @PostMapping("/data")
     @ResponseStatus(HttpStatus.OK)
-    public PriceResponseDto getActualPrices(@RequestBody @Valid PriceRequestDto priceRequestDto) {
-        return productService.getActualPrice(priceRequestDto);
+    ProductResponseForOrderDto getProductData(@Valid @RequestBody ProductRequestDto productRequestDto){
+        return productService.getProductData(productRequestDto);
     }
 }
