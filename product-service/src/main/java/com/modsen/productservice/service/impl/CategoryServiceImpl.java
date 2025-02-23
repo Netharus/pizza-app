@@ -78,11 +78,11 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(category);
     }
 
-    //TODO firstly check products
     @Override
     @Transactional
     public void deleteCategory(Long id) {
-
+        getCategory(id);
+        categoryRepository.deleteById(id);
     }
 
     @Override

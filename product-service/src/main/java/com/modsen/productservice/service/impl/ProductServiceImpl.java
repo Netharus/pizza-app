@@ -92,11 +92,11 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponseDto(productRepository.save(product));
     }
 
-    //TODO Checking if product used in order
     @Override
     @Transactional
     public void deleteProduct(Long id) {
-
+        getProduct(id);
+        productRepository.deleteById(id);
     }
 
     @Override
