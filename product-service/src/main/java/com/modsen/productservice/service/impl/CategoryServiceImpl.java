@@ -9,6 +9,7 @@ import com.modsen.productservice.dto.CategoryUpdateDto;
 import com.modsen.productservice.dto.PageContainerDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.exception.CategoryNotFoundException;
+import com.modsen.productservice.exception.ErrorMessages;
 import com.modsen.productservice.exception.ResourceAlreadyExistsException;
 import com.modsen.productservice.exception.ResourceNotAvailable;
 import com.modsen.productservice.mapper.CategoryMapper;
@@ -61,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category updateCategory = categoryMapper.fromCategoryUpdateDtoToCategory(categoryUpdateDto);
 
         if (categoryRepository.existsByNameAndIdNot(updateCategory.getName(), updateCategory.getId())) {
-            throw new ResourceAlreadyExistsException("Category with the name " + updateCategory.getName() + " already exists");
+            throw new ResourceAlreadyExistsException(String.format(ErrorMessages.CATEGORY_ALREADY_EXIST, updateCategory.getName()));
         }
 
         Category category = getCategory(updateCategory.getId());
@@ -76,7 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(CategoryCreateDto categoryCreateDto) {
         Category category = categoryMapper.fromCategoryCreateDtoToCategory(categoryCreateDto);
         if (categoryRepository.existsByName(category.getName())) {
-            throw new ResourceAlreadyExistsException("Category with the name " + category.getName() + " already exists");
+            throw new ResourceAlreadyExistsException(String.format(ErrorMessages.CATEGORY_ALREADY_EXIST, category.getName()));
         }
         category.getProducts().clear();
         return categoryRepository.save(category);
@@ -98,7 +99,7 @@ public class CategoryServiceImpl implements CategoryService {
             }
         });
         if (!productIdsUsedIn.isEmpty()) {
-            throw new ResourceNotAvailable("Product with this ids are not available to delete. Ids: " + productIdsUsedIn);
+            throw new ResourceNotAvailable(String.format(ErrorMessages.PRODUCT_UNAVAILABLE_TO_DELETE_CAT, productIdsUsedIn));
         }
     }
 
@@ -110,7 +111,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     protected Category getCategory(Long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException("Category with id " + id + " not found"));
+        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(String.format(ErrorMessages.CATEGORY_NOT_FOUND, id)));
     }
 
 

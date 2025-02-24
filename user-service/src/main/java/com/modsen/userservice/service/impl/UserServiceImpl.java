@@ -1,6 +1,7 @@
 package com.modsen.userservice.service.impl;
 
 import com.modsen.userservice.dto.UsersResponseDto;
+import com.modsen.userservice.exceptions.ErrorMessages;
 import com.modsen.userservice.exceptions.UserNotFoundException;
 import com.modsen.userservice.mapper.UserMapper;
 import com.modsen.userservice.repository.UserRepository;
@@ -20,7 +21,7 @@ public class UserServiceImpl implements UserService {
         return userMapper
                 .fromUserToUsersResponseDto(userRepository
                         .findById(id)
-                        .orElseThrow(() -> new UserNotFoundException(id)));
+                        .orElseThrow(() -> new UserNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND, id))));
     }
 
 }

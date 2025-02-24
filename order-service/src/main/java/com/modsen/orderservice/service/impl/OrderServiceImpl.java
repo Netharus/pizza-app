@@ -6,6 +6,7 @@ import com.modsen.orderservice.domain.enums.OrderStatus;
 import com.modsen.orderservice.dto.OrderCreateDto;
 import com.modsen.orderservice.dto.OrderResponseDto;
 import com.modsen.orderservice.dto.PageContainerDto;
+import com.modsen.orderservice.exception.ErrorMessages;
 import com.modsen.orderservice.exception.OrderNotFoundException;
 import com.modsen.orderservice.mapper.OrderMapper;
 import com.modsen.orderservice.repository.OrderRepository;
@@ -67,6 +68,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     protected Order getById(Long id) {
-        return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("There is no order with id " + id));
+        return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(String.format(ErrorMessages.ORDER_NOT_FOUND, id)));
     }
 }

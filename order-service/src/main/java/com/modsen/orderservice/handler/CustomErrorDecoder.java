@@ -2,6 +2,7 @@ package com.modsen.orderservice.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.modsen.orderservice.dto.ErrorResponseDto;
+import com.modsen.orderservice.exception.ErrorMessages;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import jakarta.ws.rs.NotFoundException;
@@ -20,7 +21,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
         return switch (response.status()) {
             case 400 -> new BadRequestException(errorResponse.message());
             case 404 -> new NotFoundException(errorResponse.message());
-            default -> new RuntimeException("Unexpected error: " + errorResponse.message());
+            default -> new RuntimeException(ErrorMessages.UNEXPECTED_ERROR + errorResponse.message());
         };
     }
 
@@ -28,7 +29,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
         try (InputStream body = response.body().asInputStream()) {
             return objectMapper.readValue(body, ErrorResponseDto.class);
         } catch (IOException e) {
-            return new ErrorResponseDto("Failed to parse error response");
+            return new ErrorResponseDto(ErrorMessages.PARSE_ERROR);
         }
     }
 }
