@@ -5,8 +5,8 @@ import com.modsen.productservice.dto.CategoryCreateDto;
 import com.modsen.productservice.dto.CategoryResponseDto;
 import com.modsen.productservice.dto.CategoryUpdateDto;
 import com.modsen.productservice.dto.PageContainerDto;
-import com.modsen.productservice.dto.ProductRequestDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
+import com.modsen.productservice.dto.ProductRequestDto;
 import com.modsen.productservice.dto.ProductResponseDto;
 import com.modsen.productservice.dto.ProductResponseForOrderDto;
 import com.modsen.productservice.dto.ProductStandaloneCreateDto;
@@ -22,6 +22,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -109,10 +110,15 @@ public class ProductController {
         categoryService.deleteCategory(id);
     }
 
-
     @PostMapping("/data")
     @ResponseStatus(HttpStatus.OK)
-    ProductResponseForOrderDto getProductData(@Valid @RequestBody ProductRequestDto productRequestDto){
+    ProductResponseForOrderDto getProductData(@Valid @RequestBody ProductRequestDto productRequestDto) {
         return productService.getProductData(productRequestDto);
+    }
+
+    @PatchMapping("/change_status/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    ProductResponseDto changeStatus(@PathVariable Long productId) {
+        return productService.changeStatus(productId);
     }
 }

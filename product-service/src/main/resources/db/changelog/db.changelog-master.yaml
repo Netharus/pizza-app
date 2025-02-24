@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include: 
       file: db/changelog/0.0.1/v1-accumulative-changelog.yaml
+  - include:
+      file: db/changelog/0.0.1/v2-accumulative-changelog.yaml

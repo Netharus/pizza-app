@@ -7,6 +7,7 @@ public record ProductResponseDto(
         Long productId,
         String productName,
         double price,
-        CategoryForProductResponseDto categoryForProductResponseDto
+        CategoryForProductResponseDto categoryForProductResponseDto,
+        boolean available
 ) {
 }

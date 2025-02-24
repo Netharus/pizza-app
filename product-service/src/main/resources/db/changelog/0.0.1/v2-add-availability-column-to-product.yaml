@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: v1-2-1
+      author: Mikhail Kondratsiuk
+      changes:
+        - addColumn:
+            tableName: products
+            columns:
+              - column:
+                  name: available
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropColumn:
+            tableName: products
+            columnName: available
