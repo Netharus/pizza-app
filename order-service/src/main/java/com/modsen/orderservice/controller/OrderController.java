@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,4 +66,9 @@ public class OrderController {
         return orderMapper.toOrderResponseDto(order);
     }
 
+    @GetMapping("/product/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseEntity<Boolean> isProductUsed(@PathVariable Long id) {
+        return orderService.isProductUsed(id);
+    }
 }

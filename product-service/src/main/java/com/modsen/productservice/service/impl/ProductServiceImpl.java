@@ -1,5 +1,6 @@
 package com.modsen.productservice.service.impl;
 
+import com.modsen.productservice.client.OrderClient;
 import com.modsen.productservice.domain.Category;
 import com.modsen.productservice.domain.Product;
 import com.modsen.productservice.dto.PageContainerDto;
@@ -33,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final OrderClient orderClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -97,7 +99,12 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         getProduct(id);
-        productRepository.deleteById(id);
+        if (orderClient.isProductUsed(id).getBody()) {
+            changeStatus(id);
+            throw new ResourceNotAvailable("Product with this id " + id + " already used in order. Product available change to false, wait until last order with this product ends");
+        } else {
+            productRepository.deleteById(id);
+        }
     }
 
     @Override

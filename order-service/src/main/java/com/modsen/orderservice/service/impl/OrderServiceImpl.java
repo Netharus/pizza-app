@@ -2,6 +2,7 @@ package com.modsen.orderservice.service.impl;
 
 import com.modsen.orderservice.client.UserClient;
 import com.modsen.orderservice.domain.Order;
+import com.modsen.orderservice.domain.enums.OrderStatus;
 import com.modsen.orderservice.dto.OrderCreateDto;
 import com.modsen.orderservice.dto.OrderResponseDto;
 import com.modsen.orderservice.dto.PageContainerDto;
@@ -12,6 +13,7 @@ import com.modsen.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +58,11 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public PageContainerDto<OrderResponseDto> findByUserId(Long userId, Pageable pageable) {
         return orderMapper.toOrderResponseDtoPage(orderRepository.findByUserId(userId, pageable));
+    }
+
+    @Override
+    public ResponseEntity<Boolean> isProductUsed(Long productId) {
+        return ResponseEntity.ok(orderRepository.existsByOrderItems_ProductIdAndStatusNotIn(productId, List.of(OrderStatus.CANCELLED, OrderStatus.DELIVERED)));
     }
 
     @Transactional
