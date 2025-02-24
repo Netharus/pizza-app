@@ -1,6 +1,8 @@
 package com.modsen.orderservice.exception;
 
 public final class ErrorMessages {
+    public static final String ORDER_ITEM_NOT_FOUND_WITH_PRODUCT_ID = "Order item with product id %d not found";
+
     private ErrorMessages() {
     }
 

@@ -15,6 +15,7 @@ import com.modsen.productservice.exception.ErrorMessages;
 import com.modsen.productservice.exception.ProductNotFoundException;
 import com.modsen.productservice.exception.ResourceAlreadyExistsException;
 import com.modsen.productservice.exception.ResourceNotAvailable;
+import com.modsen.productservice.kafka.KafkaProducer;
 import com.modsen.productservice.mapper.ProductMapper;
 import com.modsen.productservice.repository.ProductRepository;
 import com.modsen.productservice.service.ProductService;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final OrderClient orderClient;
+    private final KafkaProducer kafkaProducer;
 
     @Override
     @Transactional(readOnly = true)
@@ -72,6 +75,9 @@ public class ProductServiceImpl implements ProductService {
         if (updatedProduct.getCategory() != null) {
             product.setCategory(category);
         }
+        kafkaProducer.sendActualData(new ProductResponseForOrderDto(Map.of(product.getId(),
+                new ProductResponseForOrderDto
+                        .ProductData(product.getPrice(), product.getName()))));
         return productMapper.toProductResponseDto(productRepository.save(product));
     }
 

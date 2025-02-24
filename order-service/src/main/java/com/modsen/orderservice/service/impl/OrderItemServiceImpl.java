@@ -3,9 +3,12 @@ package com.modsen.orderservice.service.impl;
 import com.modsen.orderservice.client.ProductClient;
 import com.modsen.orderservice.domain.Order;
 import com.modsen.orderservice.domain.OrderItem;
+import com.modsen.orderservice.domain.enums.OrderStatus;
 import com.modsen.orderservice.dto.OrderItemCreateDto;
 import com.modsen.orderservice.dto.ProductRequestDto;
 import com.modsen.orderservice.dto.ProductResponseForOrderDto;
+import com.modsen.orderservice.exception.ErrorMessages;
+import com.modsen.orderservice.exception.OrderItemNotFound;
 import com.modsen.orderservice.mapper.OrderItemMapper;
 import com.modsen.orderservice.repository.OrderItemRepository;
 import com.modsen.orderservice.service.OrderItemService;
@@ -45,9 +48,30 @@ public class OrderItemServiceImpl implements OrderItemService {
         return orderItemRepository.existsById(productId);
     }
 
+    @Override
+    @Transactional
+    public void updateOrderItemData(ProductResponseForOrderDto productResponseForOrderDto) {
+        productResponseForOrderDto.dataById().forEach((productId, productData) -> {
+            OrderItem orderItem = getOrderItemByProductId(productId);
+            if (orderItem.getOrder().getStatus() == OrderStatus.PENDING) {
+                orderItem.setPrice(productResponseForOrderDto.dataById().get(productId).price());
+                orderItem.setProductName(productResponseForOrderDto.dataById().get(productId).name());
+                orderItemRepository.save(orderItem);
+            }
+        });
+    }
+
     @Transactional
     protected List<Long> getProductIds(List<OrderItemCreateDto> orderItemCreateDtos) {
         List<Long> productIds = orderItemCreateDtos.stream().map(OrderItemCreateDto::productId).toList();
         return productIds;
+    }
+
+    @Transactional
+    protected OrderItem getOrderItemByProductId(Long productId) {
+        return orderItemRepository
+                .findByProductId(productId)
+                .orElseThrow(() -> new OrderItemNotFound(String
+                        .format(ErrorMessages.ORDER_ITEM_NOT_FOUND_WITH_PRODUCT_ID, productId)));
     }
 }

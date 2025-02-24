@@ -26,7 +26,19 @@ spring:
           userClient:
             url: ${USER_GATEWAY_URL}
             error-decoder: com.modsen.orderservice.handler.CustomErrorDecoder
-
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: product-group-1
+      properties:
+        spring:
+          json:
+            type:
+              mapping: ProductResponseForOrderDto:com.modsen.orderservice.dto.ProductResponseForOrderDto
+            trusted:
+              packages: "*"
 eureka:
   client:
     serviceUrl:
