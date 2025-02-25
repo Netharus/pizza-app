@@ -4,7 +4,9 @@ import com.modsen.productservice.domain.Category;
 import com.modsen.productservice.dto.PageContainerDto;
 import com.modsen.productservice.dto.ProductCreateDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
+import com.modsen.productservice.dto.ProductRequestDto;
 import com.modsen.productservice.dto.ProductResponseDto;
+import com.modsen.productservice.dto.ProductResponseForOrderDto;
 import com.modsen.productservice.dto.ProductStandaloneCreateDto;
 import com.modsen.productservice.dto.ProductUpdateDto;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +28,7 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
+    ProductResponseForOrderDto getProductData(ProductRequestDto productRequestDto);
+
+    ProductResponseDto changeStatus(Long id);
 }

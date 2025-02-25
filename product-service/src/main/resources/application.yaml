@@ -16,6 +16,23 @@ spring:
     show-sql: true
   liquibase:
     change-log: db/changelog/db.changelog-master.yaml
+  cloud:
+    openfeign:
+      client:
+        config:
+          orderClient:
+            url: ${ORDER_GATEWAY_URL}
+            error-decoder: com.modsen.productservice.handler.CustomErrorDecoder
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: ProductResponseForOrderDto:com.modsen.productservice.dto.ProductResponseForOrderDto
 eureka:
   client:
     serviceUrl:

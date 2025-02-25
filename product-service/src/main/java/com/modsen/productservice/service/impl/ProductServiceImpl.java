@@ -1,15 +1,21 @@
 package com.modsen.productservice.service.impl;
 
+import com.modsen.productservice.client.OrderClient;
 import com.modsen.productservice.domain.Category;
 import com.modsen.productservice.domain.Product;
 import com.modsen.productservice.dto.PageContainerDto;
 import com.modsen.productservice.dto.ProductCreateDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
+import com.modsen.productservice.dto.ProductRequestDto;
 import com.modsen.productservice.dto.ProductResponseDto;
+import com.modsen.productservice.dto.ProductResponseForOrderDto;
 import com.modsen.productservice.dto.ProductStandaloneCreateDto;
 import com.modsen.productservice.dto.ProductUpdateDto;
+import com.modsen.productservice.exception.ErrorMessages;
 import com.modsen.productservice.exception.ProductNotFoundException;
 import com.modsen.productservice.exception.ResourceAlreadyExistsException;
+import com.modsen.productservice.exception.ResourceNotAvailable;
+import com.modsen.productservice.kafka.KafkaProducer;
 import com.modsen.productservice.mapper.ProductMapper;
 import com.modsen.productservice.repository.ProductRepository;
 import com.modsen.productservice.service.ProductService;
@@ -21,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,6 +37,8 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final OrderClient orderClient;
+    private final KafkaProducer kafkaProducer;
 
     @Override
     @Transactional(readOnly = true)
@@ -55,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
         Product updatedProduct = productMapper.fromProductUpdateDtoToProduct(productUpdateDto);
 
         if (productRepository.existsByNameAndIdNot(updatedProduct.getName(), updatedProduct.getId())) {
-            throw new ResourceAlreadyExistsException("Product with name " + updatedProduct.getName() + " already exists");
+            throw new ResourceAlreadyExistsException(String.format(ErrorMessages.PRODUCT_ALREADY_EXIST, updatedProduct.getName()));
         }
 
         Product product = getProduct(updatedProduct.getId());
@@ -65,40 +75,88 @@ public class ProductServiceImpl implements ProductService {
         if (updatedProduct.getCategory() != null) {
             product.setCategory(category);
         }
+        kafkaProducer.sendActualData(new ProductResponseForOrderDto(Map.of(product.getId(),
+                new ProductResponseForOrderDto
+                        .ProductData(product.getPrice(), product.getName()))));
         return productMapper.toProductResponseDto(productRepository.save(product));
     }
-
 
     @Override
     @Transactional
     public ProductForCategoryResponseDto createProduct(ProductCreateDto productCreateDto, Category category) {
-        Product product = productMapper.fromProductCreateDtoToProduct(productCreateDto);
-        if (productRepository.existsByName(product.getName()))
-            throw new ResourceAlreadyExistsException("Product with this name already exist " + product.getName());
-        product.setCategory(category);
-        return productMapper.productToCategoryResponseDto(productRepository.save(product));
+        Product product = createAndSaveProduct(
+                productMapper.fromProductCreateDtoToProduct(productCreateDto),
+                category
+        );
+        return productMapper.productToCategoryResponseDto(product);
     }
 
     @Override
     @Transactional
     public ProductResponseDto createProduct(ProductStandaloneCreateDto productCreateDto, Category category) {
-        Product product = productMapper.fromProductStandaloneCreateDtoToProduct(productCreateDto);
-        if (productRepository.existsByName(product.getName()))
-            throw new ResourceAlreadyExistsException("Product with this name already exist " + product.getName());
-        product.setCategory(category);
-        return productMapper.toProductResponseDto(productRepository.save(product));
+        Product product = createAndSaveProduct(
+                productMapper.fromProductStandaloneCreateDtoToProduct(productCreateDto),
+                category
+        );
+        return productMapper.toProductResponseDto(product);
     }
 
-    //TODO Checking if product used in order
+    private Product createAndSaveProduct(Product product, Category category) {
+        if (productRepository.existsByName(product.getName())) {
+            throw new ResourceAlreadyExistsException(
+                    String.format(ErrorMessages.PRODUCT_ALREADY_EXIST, product.getName())
+            );
+        }
+        product.setCategory(category);
+        return productRepository.save(product);
+    }
+
     @Override
     @Transactional
     public void deleteProduct(Long id) {
-
+        getProduct(id);
+        if (orderClient.isProductUsed(id).getBody()) {
+            changeStatus(id);
+            throw new ResourceNotAvailable(String.format(ErrorMessages.PRODUCT_UNAVAILABLE_TO_DELETE, id));
+        } else {
+            productRepository.deleteById(id);
+        }
     }
+
+    @Override
+    @Transactional
+    public ProductResponseForOrderDto getProductData(ProductRequestDto productRequestDto) {
+        checkAvailability(productRequestDto.productIds());
+        return new ProductResponseForOrderDto(productRequestDto
+                .productIds()
+                .stream()
+                .map(this::getProduct)
+                .collect(Collectors
+                        .toMap(Product::getId,
+                                product -> new ProductResponseForOrderDto
+                                        .ProductData(product.getPrice(), product.getName()))));
+    }
+
+    @Override
+    @Transactional
+    public ProductResponseDto changeStatus(Long id) {
+        Product product = getProduct(id);
+        product.setAvailable(!product.getAvailable());
+        return productMapper.toProductResponseDto(productRepository.save(product));
+    }
+
 
     @Transactional
     protected Product getProduct(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(String.format(ErrorMessages.PRODUCT_NOT_FOUND, id)));
     }
 
+    @Transactional(readOnly = true)
+    protected void checkAvailability(List<Long> productIds) {
+        productIds.forEach(productId -> {
+            if (!productRepository.existsByIdAndAvailableIsTrue(productId)) {
+                throw new ResourceNotAvailable(String.format(ErrorMessages.PRODUCT_UNAVAILABLE, productId));
+            }
+        });
+    }
 }

@@ -4,6 +4,7 @@ import com.modsen.productservice.dto.ErrorResponseDto;
 import com.modsen.productservice.exception.CategoryNotFoundException;
 import com.modsen.productservice.exception.ProductNotFoundException;
 import com.modsen.productservice.exception.ResourceAlreadyExistsException;
+import com.modsen.productservice.exception.ResourceNotAvailable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex, HttpServletRequest request) {
+        log.error("App error:", ex);
+        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI()), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ResourceNotAvailable.class)
+    public ResponseEntity<ErrorResponseDto> handleResourceAlreadyExistsException(ResourceNotAvailable ex, HttpServletRequest request) {
         log.error("App error:", ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI()), HttpStatus.CONFLICT);
     }

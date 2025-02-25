@@ -5,6 +5,7 @@ import com.modsen.orderservice.dto.OrderCreateDto;
 import com.modsen.orderservice.dto.OrderResponseDto;
 import com.modsen.orderservice.dto.PageContainerDto;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface OrderService {
     OrderResponseDto findById(Long id);
 
     PageContainerDto<OrderResponseDto> findByUserId(Long userId, Pageable pageable);
+
+    ResponseEntity<Boolean> isProductUsed(Long productId);
 }

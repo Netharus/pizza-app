@@ -6,6 +6,7 @@ import lombok.Builder;
 public record ProductForCategoryResponseDto(
         Long productId,
         String productName,
-        double price
+        double price,
+        boolean available
 ) {
 }

@@ -1,13 +1,17 @@
 package com.modsen.productservice.service.impl;
 
+import com.modsen.productservice.client.OrderClient;
 import com.modsen.productservice.domain.Category;
+import com.modsen.productservice.domain.Product;
 import com.modsen.productservice.dto.CategoryCreateDto;
 import com.modsen.productservice.dto.CategoryResponseDto;
 import com.modsen.productservice.dto.CategoryUpdateDto;
 import com.modsen.productservice.dto.PageContainerDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.exception.CategoryNotFoundException;
+import com.modsen.productservice.exception.ErrorMessages;
 import com.modsen.productservice.exception.ResourceAlreadyExistsException;
+import com.modsen.productservice.exception.ResourceNotAvailable;
 import com.modsen.productservice.mapper.CategoryMapper;
 import com.modsen.productservice.repository.CategoryRepository;
 import com.modsen.productservice.service.CategoryService;
@@ -17,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-
+    private final OrderClient orderClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -57,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category updateCategory = categoryMapper.fromCategoryUpdateDtoToCategory(categoryUpdateDto);
 
         if (categoryRepository.existsByNameAndIdNot(updateCategory.getName(), updateCategory.getId())) {
-            throw new ResourceAlreadyExistsException("Category with the name " + updateCategory.getName() + " already exists");
+            throw new ResourceAlreadyExistsException(String.format(ErrorMessages.CATEGORY_ALREADY_EXIST, updateCategory.getName()));
         }
 
         Category category = getCategory(updateCategory.getId());
@@ -72,17 +77,30 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(CategoryCreateDto categoryCreateDto) {
         Category category = categoryMapper.fromCategoryCreateDtoToCategory(categoryCreateDto);
         if (categoryRepository.existsByName(category.getName())) {
-            throw new ResourceAlreadyExistsException("Category with the name " + category.getName() + " already exists");
+            throw new ResourceAlreadyExistsException(String.format(ErrorMessages.CATEGORY_ALREADY_EXIST, category.getName()));
         }
         category.getProducts().clear();
         return categoryRepository.save(category);
     }
 
-    //TODO firstly check products
     @Override
     @Transactional
     public void deleteCategory(Long id) {
+        Category category = getCategory(id);
+        isProductAvailableToDelete(category.getProducts());
+        categoryRepository.deleteById(id);
+    }
 
+    public void isProductAvailableToDelete(List<Product> products) {
+        List<Long> productIdsUsedIn = new ArrayList<>();
+        products.forEach(product -> {
+            if (orderClient.isProductUsed(product.getId()).getBody()) {
+                productIdsUsedIn.add(product.getId());
+            }
+        });
+        if (!productIdsUsedIn.isEmpty()) {
+            throw new ResourceNotAvailable(String.format(ErrorMessages.PRODUCT_UNAVAILABLE_TO_DELETE_CAT, productIdsUsedIn));
+        }
     }
 
     @Override
@@ -93,7 +111,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     protected Category getCategory(Long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException("Category with id " + id + " not found"));
+        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(String.format(ErrorMessages.CATEGORY_NOT_FOUND, id)));
     }
 
 

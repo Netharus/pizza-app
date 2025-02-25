@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: v2-add-availability-column-to-product.yaml
+      relativeToChangelogFile: true
