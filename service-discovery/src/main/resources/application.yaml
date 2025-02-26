@@ -11,3 +11,6 @@ eureka:
     fetchRegistry: false
     serviceUrl:
       defaultZone: http://localhost:${EUREKA_SERVER_PORT}/eureka/
+  instance:
+    hostname: localhost
+    prefer-ip-address: true

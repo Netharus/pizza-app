@@ -33,7 +33,17 @@ spring:
           json:
             type:
               mapping: ProductResponseForOrderDto:com.modsen.productservice.dto.ProductResponseForOrderDto
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/realms/pizza-microservice-realm
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:${EUREKA_SERVER_PORT}/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
