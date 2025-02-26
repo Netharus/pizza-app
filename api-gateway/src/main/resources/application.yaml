@@ -20,6 +20,19 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            exposedHeaders: "*"
       routes:
         - id: orders
           uri: lb://order-service
@@ -51,15 +64,22 @@ spring:
       client:
         provider:
           keycloak:
-            issuer-uri: http://localhost:8090/realms/pizza-microservice-realm
+            issuer-uri: ${KEYCLOAK_ISSUER_URI}
+            user-name-attribute: preferred_username
         registration:
           keycloak:
             provider: keycloak
-            client-id: oath-client
-            client-secret: hD0z32AK9EWkyfahLrYkJcXphyoDY9Lz
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             scope:
                 - openid
                 - email
                 - profile
                 - roles
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+    reactor.netty: DEBUG

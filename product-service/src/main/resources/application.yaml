@@ -37,7 +37,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8090/realms/pizza-microservice-realm
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
 eureka:
   client:
     serviceUrl:
