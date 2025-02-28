@@ -9,9 +9,9 @@ public record ErrorResponseDto(
         int statusCode,
         String path,
         String message,
-        LocalDateTime timestamp
+        String timestamp
 ) {
     public ErrorResponseDto(HttpStatus httpStatus, String message, String path) {
-        this(httpStatus, httpStatus.value(), path, message, LocalDateTime.now());
+        this(httpStatus, httpStatus.value(), path, message, LocalDateTime.now().toString());
     }
 }

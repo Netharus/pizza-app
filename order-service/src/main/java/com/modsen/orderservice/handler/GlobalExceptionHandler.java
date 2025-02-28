@@ -1,8 +1,10 @@
 package com.modsen.orderservice.handler;
 
 import com.modsen.orderservice.dto.ErrorResponseDto;
+import com.modsen.orderservice.exception.ConflictException;
 import com.modsen.orderservice.exception.OrderNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleCategoryNotFoundException(OrderNotFoundException ex, HttpServletRequest request) {
         log.error("App error:", ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException ex, HttpServletRequest request) {
+        log.error("App error:", ex);
+        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponseDto> handleConflictException(ConflictException ex, HttpServletRequest request) {
+        log.error("App error:", ex);
+        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI()), HttpStatus.CONFLICT);
     }
 
 }

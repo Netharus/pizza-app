@@ -25,7 +25,7 @@ spring:
         config:
           orderClient:
             url: ${ORDER_GATEWAY_URL}
-            error-decoder: com.modsen.productservice.handler.CustomErrorDecoder
+            errorDecoder: com.modsen.productservice.handler.CustomErrorDecoder
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:

@@ -25,10 +25,11 @@ spring:
         config:
           productClient:
             url: ${PRODUCT_GATEWAY_URL}
-            error-decoder: com.modsen.orderservice.handler.CustomErrorDecoder
+            errorDecoder: com.modsen.orderservice.handler.CustomErrorDecoder
           userClient:
             url: ${USER_GATEWAY_URL}
-            error-decoder: com.modsen.orderservice.handler.CustomErrorDecoder
+            errorDecoder: com.modsen.orderservice.handler.CustomErrorDecoder
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
