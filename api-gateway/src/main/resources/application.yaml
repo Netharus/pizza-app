@@ -10,6 +10,11 @@ eureka:
     hostname: localhost
     prefer-ip-address: true
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
   application:
     name: api-gateway
   config:
@@ -63,7 +68,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8090/realms/pizza-microservice-realm/protocol/openid-connect/certs
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI}
       client:
         provider:
           keycloak:
