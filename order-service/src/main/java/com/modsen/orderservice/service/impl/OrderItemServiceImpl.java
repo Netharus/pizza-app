@@ -52,13 +52,20 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Transactional
     public void updateOrderItemData(ProductResponseForOrderDto productResponseForOrderDto) {
         productResponseForOrderDto.dataById().forEach((productId, productData) -> {
-            OrderItem orderItem = getOrderItemByProductId(productId);
-            if (orderItem.getOrder().getStatus() == OrderStatus.PENDING) {
-                orderItem.setPrice(productResponseForOrderDto.dataById().get(productId).price());
-                orderItem.setProductName(productResponseForOrderDto.dataById().get(productId).name());
-                orderItemRepository.save(orderItem);
-            }
+            List<OrderItem> orderItems = getOrderItemsByProductId(productId);
+            orderItems.forEach(orderItem -> {
+                if (orderItem.getOrder().getStatus() == OrderStatus.PENDING) {
+                    orderItem.setPrice(productResponseForOrderDto.dataById().get(productId).price());
+                    orderItem.setProductName(productResponseForOrderDto.dataById().get(productId).name());
+                    orderItemRepository.save(orderItem);
+                }
+            });
         });
+    }
+
+    @Transactional
+    protected List<OrderItem> getOrderItemsByProductId(Long productId) {
+        return orderItemRepository.findOrderItemsByProductId(productId);
     }
 
     @Transactional
