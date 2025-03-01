@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final OrderClient orderClient;
     private final KafkaProducer kafkaProducer;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
     @Transactional(readOnly = true)
@@ -112,20 +114,31 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional
     public void deleteProduct(Long id) {
-        getProduct(id);
-        if (orderClient.isProductUsed(id).getBody()) {
-            changeStatus(id);
+        Product product = getProduct(id);
+        if (Boolean.TRUE.equals(orderClient.isProductUsed(id).getBody())) {
+            changeStatusToFalse(product);
             throw new ResourceNotAvailable(String.format(ErrorMessages.PRODUCT_UNAVAILABLE_TO_DELETE, id));
         } else {
             productRepository.deleteById(id);
         }
     }
 
+    protected void changeStatusToFalse(Product product) {
+        transactionTemplate.execute(
+                status -> {
+                    product.setAvailable(false);
+                    productRepository.save(product);
+                    return null;
+                }
+        );
+    }
+
+
     @Override
     @Transactional
     public ProductResponseForOrderDto getProductData(ProductRequestDto productRequestDto) {
+        productRequestDto.productIds().forEach(this::getProduct);
         checkAvailability(productRequestDto.productIds());
         return new ProductResponseForOrderDto(productRequestDto
                 .productIds()
