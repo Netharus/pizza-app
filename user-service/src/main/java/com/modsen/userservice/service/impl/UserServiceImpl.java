@@ -3,6 +3,7 @@ package com.modsen.userservice.service.impl;
 import com.modsen.userservice.domain.User;
 import com.modsen.userservice.dto.UsersCreateDto;
 import com.modsen.userservice.dto.UsersResponseDto;
+import com.modsen.userservice.dto.UsersUpdateDto;
 import com.modsen.userservice.exceptions.AlreadyExistsException;
 import com.modsen.userservice.exceptions.ErrorMessages;
 import com.modsen.userservice.exceptions.UserNotFoundException;
@@ -29,9 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UsersResponseDto findUserById(String keycloakId) {
         return userMapper
-                .fromUserToUsersResponseDto(userRepository
-                        .findByKeycloakId(keycloakId)
-                        .orElseThrow(() -> new UserNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND, keycloakId))));
+                .fromUserToUsersResponseDto(getUserByKeycloakId(keycloakId));
     }
 
     @Override
@@ -43,26 +42,64 @@ public class UserServiceImpl implements UserService {
         return userMapper.fromUserToUsersResponseDto(userRepository.save(user));
     }
 
+    @Override
+    @Transactional
+    public UsersResponseDto updateUser(String keycloakId, UsersUpdateDto usersUpdateDto) {
+        User existingUser = getUserByKeycloakId(keycloakId);
+        User updatedUser = userMapper.fromUserUpdateDto(usersUpdateDto);
+
+        isUserUniqueUpdate(updatedUser,keycloakId);
+
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setFullName(updatedUser.getFullName());
+
+        existingUser = userRepository.save(existingUser);
+
+        keycloakService.updateUser(keycloakId,usersUpdateDto);
+
+        return userMapper.fromUserToUsersResponseDto(existingUser);
+    }
+
     private void isUserUnique(User user) {
-        User existingUser = userRepository.findByEmailOrUsernameOrPhoneNumber(
+        userRepository.findByEmailOrUsernameOrPhoneNumber(
                 user.getEmail(), user.getUsername(), user.getPhoneNumber()
-        ).orElse(null);
+        ).ifPresent(existingUser -> {
+            checkUniqueness(user, existingUser);
+        });
+    }
 
-        if (existingUser != null) {
-            List<String> conflicts = new ArrayList<>();
+    private void isUserUniqueUpdate(User updatedUser, String keycloakId) {
+        userRepository.findByEmailOrUsernameOrPhoneNumber(
+                updatedUser.getEmail(), updatedUser.getUsername(), updatedUser.getPhoneNumber()
+        ).ifPresent(existingUser -> {
+            if (!existingUser.getKeycloakId().equals(keycloakId)) {
+                checkUniqueness(updatedUser, existingUser);
+            }
+        });
+    }
 
-            if (existingUser.getEmail().equals(user.getEmail())) {
-                conflicts.add(String.format(ErrorMessages.USER_ALREADY_EXISTS_EMAIL, user.getEmail()));
-            }
-            if (existingUser.getUsername().equals(user.getUsername())) {
-                conflicts.add(String.format(ErrorMessages.USER_ALREADY_EXISTS_USERNAME, user.getUsername()));
-            }
-            if (existingUser.getPhoneNumber().equals(user.getPhoneNumber())) {
-                conflicts.add(String.format(ErrorMessages.USER_ALREADY_EXISTS_PHONE_NUMBER, user.getPhoneNumber()));
-            }
+    private void checkUniqueness(User user, User existingUser) {
+        List<String> conflicts = new ArrayList<>();
 
-            throw new AlreadyExistsException(String.join(", ", conflicts));
+        if (existingUser.getEmail().equals(user.getEmail())) {
+            conflicts.add(String.format(ErrorMessages.USER_ALREADY_EXISTS_EMAIL, user.getEmail()));
         }
+        if (existingUser.getUsername().equals(user.getUsername())) {
+            conflicts.add(String.format(ErrorMessages.USER_ALREADY_EXISTS_USERNAME, user.getUsername()));
+        }
+        if (existingUser.getPhoneNumber().equals(user.getPhoneNumber())) {
+            conflicts.add(String.format(ErrorMessages.USER_ALREADY_EXISTS_PHONE_NUMBER, user.getPhoneNumber()));
+        }
+
+        throw new AlreadyExistsException(String.join(", ", conflicts));
+    }
+
+    private User getUserByKeycloakId(String keycloakId) {
+        return userRepository
+                .findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new UserNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND, keycloakId)));
     }
 
 }
