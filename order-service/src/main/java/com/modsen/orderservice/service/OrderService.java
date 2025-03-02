@@ -19,7 +19,7 @@ public interface OrderService {
 
     OrderResponseDto findById(Long id);
 
-    PageContainerDto<OrderResponseDto> findByUserId(Long userId, Pageable pageable);
+    PageContainerDto<OrderResponseDto> findByUserId(String userId, Pageable pageable);
 
     ResponseEntity<Boolean> isProductUsed(Long productId);
 }

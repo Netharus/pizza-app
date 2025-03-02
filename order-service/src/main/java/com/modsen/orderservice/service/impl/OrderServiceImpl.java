@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageContainerDto<OrderResponseDto> findByUserId(Long userId, Pageable pageable) {
+    public PageContainerDto<OrderResponseDto> findByUserId(String userId, Pageable pageable) {
         return orderMapper.toOrderResponseDtoPage(orderRepository.findByUserId(userId, pageable));
     }
 

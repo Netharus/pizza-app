@@ -35,6 +35,7 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <spring-cloud-starter-openfeign.version>4.2.0</spring-cloud-starter-openfeign.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
+        <keycloak-core.version>26.0.4</keycloak-core.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -137,6 +138,13 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-admin-client</artifactId>
+            <version>${keycloak-core.version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>

@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 public record OrderResponseDto(
         Long id,
-        Long userId,
+        String userId,
         LocalDateTime orderDate,
         OrderStatus orderStatus,
         List<OrderItemResponseDto> orderItemResponseDtoList

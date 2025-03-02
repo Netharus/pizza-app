@@ -1,14 +1,14 @@
 package com.modsen.orderservice.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 import java.util.List;
 
 @Builder
 public record OrderCreateDto(
-        @NotNull(message = "User id can't be empty")
-        Long userId,
+        @NotBlank(message = "User id can't be empty")
+        String userId,
         List<OrderItemCreateDto> orderItemsCreateDtoList
 ) {
 }

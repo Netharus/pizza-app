@@ -1,6 +1,7 @@
 package com.modsen.userservice.handler;
 
 import com.modsen.userservice.dto.ErrorResponseDto;
+import com.modsen.userservice.exceptions.AlreadyExistsException;
 import com.modsen.userservice.exceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -39,5 +40,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
         log.error("App error:", ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleAlreadyExistsException(AlreadyExistsException ex, HttpServletRequest request) {
+        log.error("App error:", ex);
+        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI()), HttpStatus.CONFLICT);
     }
 }
