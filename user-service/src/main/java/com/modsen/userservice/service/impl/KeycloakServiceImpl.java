@@ -48,7 +48,10 @@ public class KeycloakServiceImpl implements KeycloakService {
         ));
         userRepresentation.setCredentials(Collections.singletonList(createCredential(usersCreateDto.password())));
 
-        Response response = keycloak.realm(realm).users().create(userRepresentation);
+        Response response = keycloak
+                .realm(realm)
+                .users()
+                .create(userRepresentation);
         log.info(String.format("Repsonse: %s %s%n", response.getStatus(), response.getStatusInfo()));
 
         return CreatedResponseUtil.getCreatedId(response);
@@ -57,7 +60,10 @@ public class KeycloakServiceImpl implements KeycloakService {
     @Override
     @Transactional
     public void updateUser(String keycloakId, UsersUpdateDto usersUpdateDto) {
-        UserResource userResource = keycloak.realm(realm).users().get(keycloakId);
+        UserResource userResource = keycloak
+                .realm(realm)
+                .users()
+                .get(keycloakId);
         if (userResource == null) {
             throw new UserNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND, keycloakId));
         }
@@ -77,7 +83,11 @@ public class KeycloakServiceImpl implements KeycloakService {
     @Override
     @Transactional
     public void deleteUser(String keycloakId) {
-        keycloak.realm(realm).users().get(keycloakId).remove();
+        keycloak
+                .realm(realm)
+                .users()
+                .get(keycloakId)
+                .remove();
     }
 
     private CredentialRepresentation createCredential(String password) {

@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageContainerDto<UsersResponseDto> findAll(Pageable pageable, String keyword) {
         return userMapper.toUsersPageContainerDto(userRepository.findAll(pageable, keyword));
     }
