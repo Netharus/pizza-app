@@ -10,6 +10,16 @@ spring:
     url: ${USER_DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  cloud:
+    openfeign:
+      oauth2:
+        enabled: true
+        clientRegistrationId: keycloak-feign
+      client:
+        config:
+          orderClient:
+            url: ${ORDER_GATEWAY_URL}
+            errorDecoder: com.modsen.userservice.handler.CustomErrorDecoder
   jpa:
     hibernate:
       ddl-auto: validate
@@ -25,6 +35,13 @@ spring:
             client-secret: ${KEYCLOAK_CLIENT_SECRET}
             scope: openid, profile
             authorization-grant-type: authorization_code
+            provider: keycloak
+
+          keycloak-feign:
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            provider: keycloak
         provider:
           keycloak:
             issuer-uri: ${KEYCLOAK_ISSUER_URI}

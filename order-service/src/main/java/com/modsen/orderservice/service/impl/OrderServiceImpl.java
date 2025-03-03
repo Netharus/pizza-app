@@ -66,6 +66,11 @@ public class OrderServiceImpl implements OrderService {
         return ResponseEntity.ok(orderRepository.existsByOrderItems_ProductIdAndStatusNotIn(productId, List.of(OrderStatus.CANCELLED, OrderStatus.DELIVERED)));
     }
 
+    @Override
+    public ResponseEntity<Boolean> isUserUsed(String userId) {
+        return ResponseEntity.ok(orderRepository.existsByUserIdAndStatusNotIn(userId, List.of(OrderStatus.CANCELLED, OrderStatus.DELIVERED)));
+    }
+
     @Transactional
     protected Order getById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(String.format(ErrorMessages.ORDER_NOT_FOUND, id)));

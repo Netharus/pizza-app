@@ -71,4 +71,10 @@ public class OrderController {
     ResponseEntity<Boolean> isProductUsed(@PathVariable Long id) {
         return orderService.isProductUsed(id);
     }
+
+    @GetMapping("/users/{userId}")
+    ResponseEntity<Boolean> isUserUsed(@PathVariable String userId) {
+        return orderService.isUserUsed(userId);
+    }
+
 }

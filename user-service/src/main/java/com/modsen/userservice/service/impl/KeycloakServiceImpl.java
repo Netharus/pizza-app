@@ -74,6 +74,12 @@ public class KeycloakServiceImpl implements KeycloakService {
         userResource.update(userRepresentation);
     }
 
+    @Override
+    @Transactional
+    public void deleteUser(String keycloakId) {
+        keycloak.realm(realm).users().get(keycloakId).remove();
+    }
+
     private CredentialRepresentation createCredential(String password) {
         CredentialRepresentation passwordCred = new CredentialRepresentation();
         passwordCred.setTemporary(false);

@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAll(Pageable pageable, @Param("keyword") String keyword);
 
     Optional<User> findByEmailOrUsernameOrPhoneNumber(String email, String username, String phoneNumber);
+
+    void deleteByKeycloakId(String keycloakId);
 }

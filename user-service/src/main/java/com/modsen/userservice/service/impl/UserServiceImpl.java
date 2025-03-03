@@ -1,5 +1,6 @@
 package com.modsen.userservice.service.impl;
 
+import com.modsen.userservice.client.OrderClient;
 import com.modsen.userservice.domain.User;
 import com.modsen.userservice.dto.PageContainerDto;
 import com.modsen.userservice.dto.UsersCreateDto;
@@ -7,6 +8,7 @@ import com.modsen.userservice.dto.UsersResponseDto;
 import com.modsen.userservice.dto.UsersUpdateDto;
 import com.modsen.userservice.exceptions.AlreadyExistsException;
 import com.modsen.userservice.exceptions.ErrorMessages;
+import com.modsen.userservice.exceptions.ResourceNotAvailable;
 import com.modsen.userservice.exceptions.UserNotFoundException;
 import com.modsen.userservice.mapper.UserMapper;
 import com.modsen.userservice.repository.UserRepository;
@@ -24,10 +26,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
     private final UserMapper userMapper;
-
     private final KeycloakService keycloakService;
+    private final OrderClient orderClient;
 
     @Override
     public UsersResponseDto findUserById(String keycloakId) {
@@ -67,6 +68,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageContainerDto<UsersResponseDto> findAll(Pageable pageable, String keyword) {
         return userMapper.toUsersPageContainerDto(userRepository.findAll(pageable, keyword));
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(String keycloakId) {
+        getUserByKeycloakId(keycloakId);
+        if (Boolean.TRUE.equals(orderClient.isUserUsed(keycloakId).getBody())) {
+            throw new ResourceNotAvailable(String.format(ErrorMessages.CANNOT_DELETE_USER, keycloakId));
+        }
+        keycloakService.deleteUser(keycloakId);
+        userRepository.deleteByKeycloakId(keycloakId);
     }
 
     private void isUserUnique(User user) {

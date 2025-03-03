@@ -20,4 +20,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findByUserId(String id, Pageable pageable);
 
     boolean existsByOrderItems_ProductIdAndStatusNotIn(Long productId, List<OrderStatus> statuses);
+
+    boolean existsByUserIdAndStatusNotIn(String userId, List<OrderStatus> statuses);
 }

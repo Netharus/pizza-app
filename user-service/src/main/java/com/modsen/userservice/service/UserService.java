@@ -14,4 +14,6 @@ public interface UserService {
     UsersResponseDto updateUser(String keycloakId, UsersUpdateDto usersUpdateDto);
 
     PageContainerDto<UsersResponseDto> findAll(Pageable pageable, String keyword);
+
+    void deleteUser(String keycloakId);
 }
