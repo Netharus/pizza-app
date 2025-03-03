@@ -2,6 +2,7 @@ package com.modsen.orderservice.handler;
 
 import com.modsen.orderservice.dto.ErrorResponseDto;
 import com.modsen.orderservice.exception.ConflictException;
+import com.modsen.orderservice.exception.ErrorMessages;
 import com.modsen.orderservice.exception.OrderNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.NotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,4 +55,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI()), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponseDto> handleHandlerValidationException(HandlerMethodValidationException ex, HttpServletRequest request) {
+        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.BAD_REQUEST, ErrorMessages.PAGEABLE_VALIDATION_ERROR, request.getRequestURI()), HttpStatus.BAD_REQUEST);
+    }
 }
