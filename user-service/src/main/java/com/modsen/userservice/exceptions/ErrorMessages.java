@@ -8,4 +8,6 @@ public final class ErrorMessages {
     public static final String USER_ALREADY_EXISTS_USERNAME = "User with username %s already exists";
     public static final String USER_ALREADY_EXISTS_EMAIL = "User with email %s already exists";
     public static final String USER_ALREADY_EXISTS_PHONE_NUMBER = "User with phone number %s already exists";
+    public static final String PAGEABLE_VALIDATION_ERROR = "There are no fields with this name";
+
 }

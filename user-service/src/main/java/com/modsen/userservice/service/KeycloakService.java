@@ -7,5 +7,5 @@ public interface KeycloakService {
 
     String createUser(UsersCreateDto usersCreateDto);
 
-    void updateUser(String keycloakId,UsersUpdateDto usersUpdateDto);
+    void updateUser(String keycloakId, UsersUpdateDto usersUpdateDto);
 }

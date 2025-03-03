@@ -1,6 +1,7 @@
 package com.modsen.userservice.service.impl;
 
 import com.modsen.userservice.domain.User;
+import com.modsen.userservice.dto.PageContainerDto;
 import com.modsen.userservice.dto.UsersCreateDto;
 import com.modsen.userservice.dto.UsersResponseDto;
 import com.modsen.userservice.dto.UsersUpdateDto;
@@ -12,6 +13,7 @@ import com.modsen.userservice.repository.UserRepository;
 import com.modsen.userservice.service.KeycloakService;
 import com.modsen.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +50,7 @@ public class UserServiceImpl implements UserService {
         User existingUser = getUserByKeycloakId(keycloakId);
         User updatedUser = userMapper.fromUserUpdateDto(usersUpdateDto);
 
-        isUserUniqueUpdate(updatedUser,keycloakId);
+        isUserUniqueUpdate(updatedUser, keycloakId);
 
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setEmail(updatedUser.getEmail());
@@ -57,9 +59,14 @@ public class UserServiceImpl implements UserService {
 
         existingUser = userRepository.save(existingUser);
 
-        keycloakService.updateUser(keycloakId,usersUpdateDto);
+        keycloakService.updateUser(keycloakId, usersUpdateDto);
 
         return userMapper.fromUserToUsersResponseDto(existingUser);
+    }
+
+    @Override
+    public PageContainerDto<UsersResponseDto> findAll(Pageable pageable, String keyword) {
+        return userMapper.toUsersPageContainerDto(userRepository.findAll(pageable, keyword));
     }
 
     private void isUserUnique(User user) {
