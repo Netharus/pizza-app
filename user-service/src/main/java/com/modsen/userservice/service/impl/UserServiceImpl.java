@@ -3,6 +3,7 @@ package com.modsen.userservice.service.impl;
 import com.modsen.userservice.client.OrderClient;
 import com.modsen.userservice.domain.User;
 import com.modsen.userservice.dto.PageContainerDto;
+import com.modsen.userservice.dto.ProfileResponseDto;
 import com.modsen.userservice.dto.UsersCreateDto;
 import com.modsen.userservice.dto.UsersResponseDto;
 import com.modsen.userservice.dto.UsersUpdateDto;
@@ -80,6 +81,12 @@ public class UserServiceImpl implements UserService {
         }
         keycloakService.deleteUser(keycloakId);
         userRepository.deleteByKeycloakId(keycloakId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProfileResponseDto getProfile(String userId) {
+        return userMapper.toProfileDto(getUserByKeycloakId(userId));
     }
 
     private void isUserUnique(User user) {
