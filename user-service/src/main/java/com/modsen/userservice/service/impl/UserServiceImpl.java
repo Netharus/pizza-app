@@ -2,6 +2,7 @@ package com.modsen.userservice.service.impl;
 
 import com.modsen.userservice.client.OrderClient;
 import com.modsen.userservice.domain.User;
+import com.modsen.userservice.domain.enums.Role;
 import com.modsen.userservice.dto.PageContainerDto;
 import com.modsen.userservice.dto.ProfileResponseDto;
 import com.modsen.userservice.dto.UsersCreateDto;
@@ -87,6 +88,16 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public ProfileResponseDto getProfile(String userId) {
         return userMapper.toProfileDto(getUserByKeycloakId(userId));
+    }
+
+    @Override
+    @Transactional
+    public UsersResponseDto assignRole(String keycloakId, String role) {
+        User user = getUserByKeycloakId(keycloakId);
+        user.setRole(Role.valueOf(role.toUpperCase()));
+        user = userRepository.save(user);
+        keycloakService.assignRole(keycloakId, role);
+        return userMapper.fromUserToUsersResponseDto(user);
     }
 
     private void isUserUnique(User user) {

@@ -19,4 +19,6 @@ public interface UserService {
     void deleteUser(String keycloakId);
 
     ProfileResponseDto getProfile(String userId);
+
+    UsersResponseDto assignRole(String keycloakId, String role);
 }
