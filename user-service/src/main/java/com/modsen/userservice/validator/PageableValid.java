@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PageableValid {
-    String message() default "Invalid field name";
+    String message() default "";
 
     Class<?>[] groups() default {};
 

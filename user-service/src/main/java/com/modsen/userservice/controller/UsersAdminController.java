@@ -6,11 +6,13 @@ import com.modsen.userservice.dto.UsersResponseDto;
 import com.modsen.userservice.dto.UsersUpdateDto;
 import com.modsen.userservice.service.UserService;
 import com.modsen.userservice.validator.PageableValid;
+import com.modsen.userservice.validator.ValidRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+@Validated
 public class UsersAdminController {
 
     private final UserService userService;
@@ -59,5 +62,11 @@ public class UsersAdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String keycloakId) {
         userService.deleteUser(keycloakId);
+    }
+
+    @PutMapping("/roles/assign/{keycloakId}")
+    @ResponseStatus(HttpStatus.OK)
+    public UsersResponseDto assignRole(@PathVariable String keycloakId, @ValidRole @RequestParam String role) {
+        return userService.assignRole(keycloakId, role);
     }
 }

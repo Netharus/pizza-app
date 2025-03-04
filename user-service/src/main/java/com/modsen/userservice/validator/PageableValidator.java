@@ -1,5 +1,6 @@
 package com.modsen.userservice.validator;
 
+import com.modsen.userservice.exceptions.ErrorMessages;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,12 @@ public class PageableValidator implements ConstraintValidator<PageableValid, Pag
     public boolean isValid(Pageable p, ConstraintValidatorContext constraintValidatorContext) {
         for (Sort.Order order : p.getSort()) {
             if (!allowedFields.contains(order.getProperty())) {
+                constraintValidatorContext.disableDefaultConstraintViolation();
+
+
+                constraintValidatorContext.buildConstraintViolationWithTemplate(String
+                                .format(ErrorMessages.PAGEABLE_VALIDATION_ERROR, order.getProperty()))
+                        .addConstraintViolation();
                 return false;
             }
         }
