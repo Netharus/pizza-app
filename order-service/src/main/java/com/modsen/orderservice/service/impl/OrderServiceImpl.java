@@ -71,6 +71,18 @@ public class OrderServiceImpl implements OrderService {
         return ResponseEntity.ok(orderRepository.existsByUserIdAndStatusNotIn(userId, List.of(OrderStatus.CANCELLED, OrderStatus.DELIVERED)));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PageContainerDto<OrderResponseDto> findAll(Pageable pageable, String keyword, String userId) {
+        return orderMapper.toOrderResponseDtoPage(orderRepository.findAllByUserId(userId, keyword, pageable));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getActualOrders(String userId) {
+        return ResponseEntity.ok(orderMapper.toOrderResponseDtoList(orderRepository.findAllByUserIdAndStatusNotIn(userId, List.of(OrderStatus.CANCELLED, OrderStatus.DELIVERED))));
+    }
+
     @Transactional
     protected Order getById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(String.format(ErrorMessages.ORDER_NOT_FOUND, id)));

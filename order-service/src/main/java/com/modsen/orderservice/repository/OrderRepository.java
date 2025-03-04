@@ -22,4 +22,14 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     boolean existsByOrderItems_ProductIdAndStatusNotIn(Long productId, List<OrderStatus> statuses);
 
     boolean existsByUserIdAndStatusNotIn(String userId, List<OrderStatus> statuses);
+
+    @Query("SELECT o FROM Order o WHERE "
+            + "(LOWER(CAST(o.id AS string)) LIKE LOWER(CONCAT('%',:keyword,'%')) OR "
+            + "LOWER(o.status) LIKE LOWER(CONCAT('%',:keyword,'%'))) "
+            + "AND o.userId = :userId")
+    Page<Order> findAllByUserId(@Param("userId") String userId,
+                                @Param("keyword") String keyword,
+                                Pageable pageable);
+
+    List<Order> findAllByUserIdAndStatusNotIn(String userId, List<OrderStatus> statuses);
 }

@@ -24,4 +24,8 @@ public interface OrderService {
     ResponseEntity<Boolean> isProductUsed(Long productId);
 
     ResponseEntity<Boolean> isUserUsed(String userId);
+
+    PageContainerDto<OrderResponseDto> findAll(Pageable pageable, String keyword, String userId);
+
+    ResponseEntity<?> getActualOrders(String userId);
 }
