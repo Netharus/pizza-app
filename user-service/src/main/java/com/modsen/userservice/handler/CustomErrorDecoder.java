@@ -1,7 +1,6 @@
 package com.modsen.userservice.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.modsen.userservice.dto.ErrorResponseDto;
 import com.modsen.userservice.exceptions.ErrorMessages;
 import feign.Response;
