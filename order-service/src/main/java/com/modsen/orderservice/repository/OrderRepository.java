@@ -17,7 +17,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("select o from Order o where cast(o.id as string) like lower(concat('%',:keyword,'%')) or lower(o.status) like lower(concat('%',:keyword,'%')) ")
     Page<Order> findAll(Pageable pageable, @Param("keyword") String keyword);
 
-    Page<Order> findByUserId(Long id, Pageable pageable);
+    Page<Order> findByUserId(String id, Pageable pageable);
 
     boolean existsByOrderItems_ProductIdAndStatusNotIn(Long productId, List<OrderStatus> statuses);
+
+    boolean existsByUserIdAndStatusNotIn(String userId, List<OrderStatus> statuses);
 }

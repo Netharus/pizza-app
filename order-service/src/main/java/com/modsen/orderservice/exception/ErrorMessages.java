@@ -11,4 +11,7 @@ public final class ErrorMessages {
     public static final String UNEXPECTED_ERROR = "Unexpected error: ";
 
     public static final String PARSE_ERROR = "Unexpected error: ";
+
+    public static final String PAGEABLE_VALIDATION_ERROR = "There are no fields with this name";
+
 }

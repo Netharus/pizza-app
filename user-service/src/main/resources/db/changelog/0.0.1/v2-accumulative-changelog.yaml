@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: v2-add-keycloak-id-changelog.yaml
+      relativeToChangelogFile: true

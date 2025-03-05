@@ -57,13 +57,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageContainerDto<OrderResponseDto> findByUserId(Long userId, Pageable pageable) {
+    public PageContainerDto<OrderResponseDto> findByUserId(String userId, Pageable pageable) {
         return orderMapper.toOrderResponseDtoPage(orderRepository.findByUserId(userId, pageable));
     }
 
     @Override
     public ResponseEntity<Boolean> isProductUsed(Long productId) {
         return ResponseEntity.ok(orderRepository.existsByOrderItems_ProductIdAndStatusNotIn(productId, List.of(OrderStatus.CANCELLED, OrderStatus.DELIVERED)));
+    }
+
+    @Override
+    public ResponseEntity<Boolean> isUserUsed(String userId) {
+        return ResponseEntity.ok(orderRepository.existsByUserIdAndStatusNotIn(userId, List.of(OrderStatus.CANCELLED, OrderStatus.DELIVERED)));
     }
 
     @Transactional

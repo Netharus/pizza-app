@@ -6,36 +6,88 @@ eureka:
       defaultZone: http://localhost:${EUREKA_SERVER_PORT}/eureka/
     fetch-registry: true
     register-with-eureka: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
   application:
     name: api-gateway
   config:
     import: optional:file:./docker/.env[.properties]
   cloud:
     gateway:
-      mvc:
-        routes:
-          - id: users
-            uri: lb://user-service
-            predicates:
-              - Path=/users/**
-            filters:
-              - PrefixPath=/api/v1
-          - id: orders
-            uri: lb://order-service
-            predicates:
-              - Path=/orders/**
-            filters:
-              - PrefixPath=/api/v1
-          - id: products
-            uri: lb://product-service
-            predicates:
-              - Path=/products/**
-            filters:
-              - PrefixPath=/api/v1
-          - id: categories
-            uri: lb://product-service
-            predicates:
-              - Path=/categories/**
-            filters:
-              - PrefixPath=/api/v1/products
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            exposedHeaders: "*"
+      routes:
+        - id: orders
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
+          filters:
+            - PrefixPath=/api/v1
+        - id: products
+          uri: lb://product-service
+          predicates:
+            - Path=/products/**
+          filters:
+            - PrefixPath=/api/v1
+        - id: categories
+          uri: lb://product-service
+          predicates:
+            - Path=/categories/**
+          filters:
+            - PrefixPath=/api/v1/products
+        - id: users
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
+          filters:
+            - PrefixPath=/api/v1
+      default-filters: TokenRelay=
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI}
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER_URI}
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            scope:
+                - openid
+                - email
+                - profile
+                - roles
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+    reactor.netty: DEBUG

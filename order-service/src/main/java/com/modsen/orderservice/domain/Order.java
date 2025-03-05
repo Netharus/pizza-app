@@ -34,7 +34,7 @@ public class Order {
     private Long id;
 
     @Column(nullable = false)
-    private Long userId;
+    private String userId;
 
     @Builder.Default
     @Column(nullable = false)

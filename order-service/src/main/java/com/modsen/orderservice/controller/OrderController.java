@@ -47,11 +47,11 @@ public class OrderController {
         return orderService.findById(orderId);
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public PageContainerDto<OrderResponseDto> getOrdersByUserId(@PageableValid @PageableDefault(sort = "id") Pageable pageable,
-                                                                @PathVariable Long id) {
-        return orderService.findByUserId(id, pageable);
+                                                                @PathVariable String userId) {
+        return orderService.findByUserId(userId, pageable);
     }
 
     @PostMapping
@@ -71,4 +71,10 @@ public class OrderController {
     ResponseEntity<Boolean> isProductUsed(@PathVariable Long id) {
         return orderService.isProductUsed(id);
     }
+
+    @GetMapping("/users/{userId}")
+    ResponseEntity<Boolean> isUserUsed(@PathVariable String userId) {
+        return orderService.isUserUsed(userId);
+    }
+
 }

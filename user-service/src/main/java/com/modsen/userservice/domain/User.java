@@ -28,6 +28,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, name = "keycloak_id")
+    private String keycloakId;
+
     @Column(length = 30, nullable = false, unique = true, name = "username")
     private String username;
 

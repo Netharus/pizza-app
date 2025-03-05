@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: v1-1-2
+      author: Mikhail Kondratsiuk
+      changes:
+        - modifyDataType:
+            tableName: orders
+            columnName: user_id
+            newDataType: varchar(255)

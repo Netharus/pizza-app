@@ -2,6 +2,7 @@ package com.modsen.orderservice.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.modsen.orderservice.dto.ErrorResponseDto;
+import com.modsen.orderservice.exception.ConflictException;
 import com.modsen.orderservice.exception.ErrorMessages;
 import feign.Response;
 import feign.codec.ErrorDecoder;
@@ -21,6 +22,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
         return switch (response.status()) {
             case 400 -> new BadRequestException(errorResponse.message());
             case 404 -> new NotFoundException(errorResponse.message());
+            case 409 -> new ConflictException(errorResponse.message());
             default -> new RuntimeException(ErrorMessages.UNEXPECTED_ERROR + errorResponse.message());
         };
     }

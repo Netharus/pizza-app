@@ -10,13 +10,56 @@ spring:
     url: ${USER_DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  cloud:
+    openfeign:
+      oauth2:
+        enabled: true
+        clientRegistrationId: keycloak-feign
+      client:
+        config:
+          orderClient:
+            url: ${ORDER_GATEWAY_URL}
+            errorDecoder: com.modsen.userservice.handler.CustomErrorDecoder
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: true
   liquibase:
     change-log: db/changelog/db.changelog-master.yaml
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            scope: openid, profile
+            authorization-grant-type: authorization_code
+            provider: keycloak
+
+          keycloak-feign:
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            provider: keycloak
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER_URI}
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:${EUREKA_SERVER_PORT}/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+keycloak:
+  server-url: ${KEYCLOAK_SERVER_URL}
+  realm: ${KEYCLOAK_REALM}
+  username: ${KEYCLOAK_ADMIN_USERNAME}
+  password: ${KEYCLOAK_ADMIN_PASSWORD}

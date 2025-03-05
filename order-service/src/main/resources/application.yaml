@@ -18,14 +18,18 @@ spring:
     change-log: db/changelog/db.changelog-master.yaml
   cloud:
     openfeign:
+      oauth2:
+        enabled: true
+        clientRegistrationId: keycloak
       client:
         config:
           productClient:
             url: ${PRODUCT_GATEWAY_URL}
-            error-decoder: com.modsen.orderservice.handler.CustomErrorDecoder
+            errorDecoder: com.modsen.orderservice.handler.CustomErrorDecoder
           userClient:
             url: ${USER_GATEWAY_URL}
-            error-decoder: com.modsen.orderservice.handler.CustomErrorDecoder
+            errorDecoder: com.modsen.orderservice.handler.CustomErrorDecoder
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
@@ -39,7 +43,29 @@ spring:
               mapping: ProductResponseForOrderDto:com.modsen.orderservice.dto.ProductResponseForOrderDto
             trusted:
               packages: "*"
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: ${KEYCLOAK_TOKEN_URI}
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:${EUREKA_SERVER_PORT}/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+
+
