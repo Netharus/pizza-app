@@ -18,8 +18,6 @@ public class PageableValidator implements ConstraintValidator<PageableValid, Pag
         for (Sort.Order order : p.getSort()) {
             if (!allowedFields.contains(order.getProperty())) {
                 constraintValidatorContext.disableDefaultConstraintViolation();
-
-
                 constraintValidatorContext.buildConstraintViolationWithTemplate(String
                                 .format(ErrorMessages.PAGEABLE_VALIDATION_ERROR, order.getProperty()))
                         .addConstraintViolation();
