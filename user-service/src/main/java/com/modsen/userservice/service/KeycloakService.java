@@ -10,4 +10,6 @@ public interface KeycloakService {
     void updateUser(String keycloakId, UsersUpdateDto usersUpdateDto);
 
     void deleteUser(String keycloakId);
+
+    void assignRole(String keycloakId, String role);
 }

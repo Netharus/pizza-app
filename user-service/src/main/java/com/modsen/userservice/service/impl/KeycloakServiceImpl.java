@@ -1,6 +1,7 @@
 package com.modsen.userservice.service.impl;
 
 import com.modsen.userservice.domain.User;
+import com.modsen.userservice.domain.enums.Role;
 import com.modsen.userservice.dto.UsersCreateDto;
 import com.modsen.userservice.dto.UsersUpdateDto;
 import com.modsen.userservice.exceptions.ErrorMessages;
@@ -12,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,7 @@ public class KeycloakServiceImpl implements KeycloakService {
 
         userRepresentation.setUsername(user.getUsername());
         userRepresentation.setEmail(user.getEmail());
+        userRepresentation.setEmailVerified(true);
         userRepresentation.setEnabled(true);
         userRepresentation.setAttributes(Map.of(
                 "fullName", List.of(user.getFullName()),
@@ -54,19 +58,15 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .create(userRepresentation);
         log.info(String.format("Repsonse: %s %s%n", response.getStatus(), response.getStatusInfo()));
 
+        assignRole(CreatedResponseUtil.getCreatedId(response), Role.USER.getValue());
+
         return CreatedResponseUtil.getCreatedId(response);
     }
 
     @Override
     @Transactional
     public void updateUser(String keycloakId, UsersUpdateDto usersUpdateDto) {
-        UserResource userResource = keycloak
-                .realm(realm)
-                .users()
-                .get(keycloakId);
-        if (userResource == null) {
-            throw new UserNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND, keycloakId));
-        }
+        UserResource userResource = getUserResource(keycloakId);
 
         UserRepresentation userRepresentation = userResource.toRepresentation();
 
@@ -90,6 +90,28 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .remove();
     }
 
+    @Override
+    @Transactional
+    public void assignRole(String keycloakId, String role) {
+        UserResource userResource = getUserResource(keycloakId);
+        RolesResource rolesResource = getRolesResource();
+
+        RoleRepresentation newRole = rolesResource.get(role.toUpperCase()).toRepresentation();
+
+        String oppositeRole = role.equalsIgnoreCase(Role.ADMIN.getValue()) ? Role.USER.getValue() : Role.ADMIN.getValue();
+
+        RoleRepresentation oppositeRoleRepresentation = rolesResource.get(oppositeRole.toUpperCase()).toRepresentation();
+        List<RoleRepresentation> existingRoles = userResource.roles().realmLevel().listAll();
+
+        if (existingRoles.stream().anyMatch(r -> r.getName().equalsIgnoreCase(oppositeRole))) {
+            userResource.roles().realmLevel().remove(Collections.singletonList(oppositeRoleRepresentation));
+            log.info("Removed role {} from user {}", oppositeRole, keycloakId);
+        }
+
+        userResource.roles().realmLevel().add(Collections.singletonList(newRole));
+        log.info("Assigned role {} to user {}", role, keycloakId);
+    }
+
     private CredentialRepresentation createCredential(String password) {
         CredentialRepresentation passwordCred = new CredentialRepresentation();
         passwordCred.setTemporary(false);
@@ -98,4 +120,18 @@ public class KeycloakServiceImpl implements KeycloakService {
         return passwordCred;
     }
 
+    private UserResource getUserResource(String keycloakId) {
+        UserResource userResource = keycloak
+                .realm(realm)
+                .users()
+                .get(keycloakId);
+        if (userResource == null) {
+            throw new UserNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND, keycloakId));
+        }
+        return userResource;
+    }
+
+    private RolesResource getRolesResource() {
+        return keycloak.realm(realm).roles();
+    }
 }

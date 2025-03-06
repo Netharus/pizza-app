@@ -2,6 +2,7 @@ package com.modsen.userservice.mapper;
 
 import com.modsen.userservice.domain.User;
 import com.modsen.userservice.dto.PageContainerDto;
+import com.modsen.userservice.dto.ProfileResponseDto;
 import com.modsen.userservice.dto.UsersCreateDto;
 import com.modsen.userservice.dto.UsersResponseDto;
 import com.modsen.userservice.dto.UsersUpdateDto;
@@ -21,4 +22,6 @@ public interface UserMapper {
 
     @Mapping(target = "pageNum", source = "number")
     PageContainerDto<UsersResponseDto> toUsersPageContainerDto(Page<User> users);
+
+    ProfileResponseDto toProfileDto(User user);
 }

@@ -19,4 +19,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsByNameAndIdNot(String name, Long id);
 
     boolean existsByIdAndAvailableIsTrue(Long id);
+
+    @Query("SELECT p FROM Product p WHERE (LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(p.category.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+            "AND p.available = true")
+    Page<Product> findAllByAvailableIsTrue(Pageable pageable, @Param("keyword") String keyword);
 }

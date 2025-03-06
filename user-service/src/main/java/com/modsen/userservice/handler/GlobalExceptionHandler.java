@@ -2,19 +2,21 @@ package com.modsen.userservice.handler;
 
 import com.modsen.userservice.dto.ErrorResponseDto;
 import com.modsen.userservice.exceptions.AlreadyExistsException;
-import com.modsen.userservice.exceptions.ErrorMessages;
 import com.modsen.userservice.exceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -50,8 +52,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI()), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ErrorResponseDto> handleHandlerValidationException(HandlerMethodValidationException ex, HttpServletRequest request) {
-        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.BAD_REQUEST, ErrorMessages.PAGEABLE_VALIDATION_ERROR, request.getRequestURI()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleHandlerValidationException(ConstraintViolationException ex, HttpServletRequest request) {
+        String errors = ex.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(","));
+        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.BAD_REQUEST, errors, request.getRequestURI()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        log.error("App error:", ex);
+        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI()), HttpStatus.FORBIDDEN);
+    }
+
 }

@@ -62,6 +62,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public PageContainerDto<ProductResponseDto> findAllForUser(Pageable pageable, String keyword) {
+        return productMapper.toProductPageContainerDto(productRepository.findAllByAvailableIsTrue(pageable,keyword));
+    }
+
+    @Override
     @Transactional
     public ProductResponseDto updateProduct(ProductUpdateDto productUpdateDto, Category category) {
         Product updatedProduct = productMapper.fromProductUpdateDtoToProduct(productUpdateDto);
