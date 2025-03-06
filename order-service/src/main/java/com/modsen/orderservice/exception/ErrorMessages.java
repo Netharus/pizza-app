@@ -10,5 +10,6 @@ public final class ErrorMessages {
     public static final String UNEXPECTED_ERROR = "Unexpected error: ";
     public static final String PARSE_ERROR = "Unexpected error: ";
     public static final String PAGEABLE_VALIDATION_ERROR = "There are no fields with this name %s";
-
+    public static final String WRONG_STATUS = "Invalid status. Allowed values: PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED (case-insensitive).";
+    public static final String WRONG_STATUS_ORDER = "Invalid status transition from %s to %s";
 }

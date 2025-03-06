@@ -13,6 +13,8 @@ public interface OrderService {
 
     Order createOrder(OrderCreateDto orderCreateDto);
 
+    Order createOrder(String userId);
+
     PageContainerDto<OrderResponseDto> findAll(Pageable pageable, String keywords);
 
     List<OrderResponseDto> findAll();
@@ -28,4 +30,6 @@ public interface OrderService {
     PageContainerDto<OrderResponseDto> findAll(Pageable pageable, String keyword, String userId);
 
     ResponseEntity<?> getActualOrders(String userId);
+
+    OrderResponseDto changeStatus(Long orderId, String status);
 }

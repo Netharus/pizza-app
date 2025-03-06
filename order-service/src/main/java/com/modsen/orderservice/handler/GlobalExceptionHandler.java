@@ -2,6 +2,7 @@ package com.modsen.orderservice.handler;
 
 import com.modsen.orderservice.dto.ErrorResponseDto;
 import com.modsen.orderservice.exception.ConflictException;
+import com.modsen.orderservice.exception.InvalidOrderStatusException;
 import com.modsen.orderservice.exception.OrderNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -69,5 +70,11 @@ public class GlobalExceptionHandler {
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(","));
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.BAD_REQUEST, errors, request.getRequestURI()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidOrderStatusException(InvalidOrderStatusException ex, HttpServletRequest request) {
+        log.error("App error:", ex);
+        return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI()), HttpStatus.BAD_REQUEST);
     }
 }
