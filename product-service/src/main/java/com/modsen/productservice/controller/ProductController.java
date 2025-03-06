@@ -4,6 +4,7 @@ import com.modsen.productservice.domain.Category;
 import com.modsen.productservice.dto.CategoryCreateDto;
 import com.modsen.productservice.dto.CategoryResponseDto;
 import com.modsen.productservice.dto.CategoryUpdateDto;
+import com.modsen.productservice.dto.PageContainerDto;
 import com.modsen.productservice.dto.ProductForCategoryResponseDto;
 import com.modsen.productservice.dto.ProductRequestDto;
 import com.modsen.productservice.dto.ProductResponseDto;
@@ -12,17 +13,23 @@ import com.modsen.productservice.dto.ProductStandaloneCreateDto;
 import com.modsen.productservice.dto.ProductUpdateDto;
 import com.modsen.productservice.service.CategoryService;
 import com.modsen.productservice.service.ProductService;
+import com.modsen.productservice.validator.PageableValid;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,6 +44,13 @@ public class ProductController {
     private final ProductService productService;
 
     private final CategoryService categoryService;
+
+    @GetMapping("/admin")
+    @ResponseStatus(HttpStatus.OK)
+    public PageContainerDto<ProductResponseDto> findAllProducts(@PageableValid @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                @RequestParam(defaultValue = "") String keyword) {
+        return productService.findAll(pageable, keyword);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

@@ -34,7 +34,7 @@ public class ProductUserController {
     @ResponseStatus(HttpStatus.OK)
     public PageContainerDto<ProductResponseDto> findAllProducts(@PageableValid @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                                                 @RequestParam(defaultValue = "") String keyword) {
-        return productService.findAll(pageable, keyword);
+        return productService.findAllForUser(pageable, keyword);
     }
 
     @GetMapping("/{id}")

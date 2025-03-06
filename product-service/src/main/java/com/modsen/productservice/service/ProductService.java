@@ -20,6 +20,8 @@ public interface ProductService {
 
     PageContainerDto<ProductResponseDto> findAll(Pageable pageable, String keyword);
 
+    PageContainerDto<ProductResponseDto> findAllForUser(Pageable pageable, String keyword);
+
     ProductResponseDto updateProduct(ProductUpdateDto productUpdateDto, Category category);
 
     ProductForCategoryResponseDto createProduct(ProductCreateDto productCreateDto, Category category);
