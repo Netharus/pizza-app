@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -110,6 +112,31 @@ public class KeycloakServiceImpl implements KeycloakService {
 
         userResource.roles().realmLevel().add(Collections.singletonList(newRole));
         log.info("Assigned role {} to user {}", role, keycloakId);
+    }
+
+    @Override
+    @Transactional
+    public User findById(String keycloakId) {
+        UserResource userResource = getUserResource(keycloakId);
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        User user = User.builder()
+                .username(userRepresentation.getUsername())
+                .email(userRepresentation.getEmail())
+                .fullName(userRepresentation.getAttributes().get("fullName").getFirst())
+                .phoneNumber(userRepresentation.getAttributes().get("phoneNumber").getFirst())
+                .role(getUserRole(userResource))
+                .keycloakId(keycloakId)
+                .build();
+
+        return user;
+    }
+
+    @Transactional
+    protected Role getUserRole(UserResource userResource) {
+        Set<String> set = userResource.roles().realmLevel().listAll().stream().map(RoleRepresentation::getName).collect(Collectors.toSet());
+        if (set.contains(Role.ADMIN.getValue())) {
+            return Role.ADMIN;
+        } else return Role.USER;
     }
 
     private CredentialRepresentation createCredential(String password) {

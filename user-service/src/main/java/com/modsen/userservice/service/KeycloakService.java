@@ -1,5 +1,6 @@
 package com.modsen.userservice.service;
 
+import com.modsen.userservice.domain.User;
 import com.modsen.userservice.dto.UsersCreateDto;
 import com.modsen.userservice.dto.UsersUpdateDto;
 
@@ -12,4 +13,6 @@ public interface KeycloakService {
     void deleteUser(String keycloakId);
 
     void assignRole(String keycloakId, String role);
+
+    User findById(String keycloakId);
 }
