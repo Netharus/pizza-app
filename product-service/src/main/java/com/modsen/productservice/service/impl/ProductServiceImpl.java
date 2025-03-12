@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -64,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageContainerDto<ProductResponseDto> findAllForUser(Pageable pageable, String keyword) {
-        return productMapper.toProductPageContainerDto(productRepository.findAllByAvailableIsTrue(pageable,keyword));
+        return productMapper.toProductPageContainerDto(productRepository.findAllByAvailableIsTrue(pageable, keyword));
     }
 
     @Override

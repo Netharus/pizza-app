@@ -26,4 +26,6 @@ public interface CategoryService {
     void deleteCategory(Long id);
 
     CategoryResponseDto getCategoryResponseDto(Category category, List<ProductForCategoryResponseDto> products);
+
+    List<String> getCategoriesNameList();
 }

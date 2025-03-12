@@ -109,6 +109,12 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.categoryToCategoryResponseDto(category, products);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getCategoriesNameList() {
+        return categoryRepository.findCategoryByOrderByNameAsc().stream().map(Category::getName).toList();
+    }
+
     @Transactional
     protected Category getCategory(Long id) {
         return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(String.format(ErrorMessages.CATEGORY_NOT_FOUND, id)));
