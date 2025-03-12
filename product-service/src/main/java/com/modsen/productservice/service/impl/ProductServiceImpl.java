@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -161,6 +162,12 @@ public class ProductServiceImpl implements ProductService {
         Product product = getProduct(id);
         product.setAvailable(!product.getAvailable());
         return productMapper.toProductResponseDto(productRepository.save(product));
+    }
+
+    @Override
+    @Transactional
+    public List<ProductResponseDto> findAllByCategory(String keyword) {
+        return productMapper.toProductResponseDtoList(productRepository.findByOrderByCategoryAsc(keyword));
     }
 
 
