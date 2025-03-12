@@ -7,11 +7,13 @@ import com.modsen.orderservice.exception.ErrorMessages;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import jakarta.ws.rs.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+@Slf4j
 public class CustomErrorDecoder implements ErrorDecoder {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -29,8 +31,10 @@ public class CustomErrorDecoder implements ErrorDecoder {
 
     private ErrorResponseDto parseError(Response response) {
         try (InputStream body = response.body().asInputStream()) {
-            return objectMapper.readValue(body, ErrorResponseDto.class);
+            ErrorResponseDto errorResponse = objectMapper.readValue(body, ErrorResponseDto.class);
+            return errorResponse;
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             return new ErrorResponseDto(ErrorMessages.PARSE_ERROR);
         }
     }
