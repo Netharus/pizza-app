@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
         product.setName(updatedProduct.getName());
         product.setPrice(updatedProduct.getPrice());
 
-        if (updatedProduct.getCategory() != null) {
+        if (productUpdateDto.categoryId() != null) {
             product.setCategory(category);
         }
         kafkaProducer.sendActualData(new ProductResponseForOrderDto(Map.of(product.getId(),
