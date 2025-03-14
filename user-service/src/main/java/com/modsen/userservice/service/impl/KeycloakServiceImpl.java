@@ -38,6 +38,12 @@ public class KeycloakServiceImpl implements KeycloakService {
     private String realm;
     private final UserMapper userMapper;
 
+    private final static String FULL_NAME = "fullName";
+    private final static String PHONE_NUMBER = "phoneNumber";
+    private final static String KEYCLOAK_RESPONSE = "Response: %s %s%n";
+    private final static String REMOVE_ROLE = "Removed role {} from user {}";
+    private final static String ASSIGN_ROLE = "Assigned role {} to user {}";
+
     @Override
     @Transactional
     public String createUser(UsersCreateDto usersCreateDto) {
@@ -49,8 +55,8 @@ public class KeycloakServiceImpl implements KeycloakService {
         userRepresentation.setEmailVerified(true);
         userRepresentation.setEnabled(true);
         userRepresentation.setAttributes(Map.of(
-                "fullName", List.of(user.getFullName()),
-                "phoneNumber", List.of(user.getPhoneNumber())
+                FULL_NAME, List.of(user.getFullName()),
+                PHONE_NUMBER, List.of(user.getPhoneNumber())
         ));
         userRepresentation.setCredentials(Collections.singletonList(createCredential(usersCreateDto.password())));
 
@@ -58,7 +64,7 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .realm(realm)
                 .users()
                 .create(userRepresentation);
-        log.info(String.format("Repsonse: %s %s%n", response.getStatus(), response.getStatusInfo()));
+        log.info(String.format(KEYCLOAK_RESPONSE, response.getStatus(), response.getStatusInfo()));
 
         assignRole(CreatedResponseUtil.getCreatedId(response), Role.USER.getValue());
 
@@ -75,8 +81,8 @@ public class KeycloakServiceImpl implements KeycloakService {
         userRepresentation.setUsername(usersUpdateDto.username());
         userRepresentation.setEmail(usersUpdateDto.email());
         userRepresentation.setAttributes(Map.of(
-                "fullName", List.of(usersUpdateDto.fullName()),
-                "phoneNumber", List.of(usersUpdateDto.phoneNumber())
+                FULL_NAME, List.of(usersUpdateDto.fullName()),
+                PHONE_NUMBER, List.of(usersUpdateDto.phoneNumber())
         ));
 
         userResource.update(userRepresentation);
@@ -107,11 +113,11 @@ public class KeycloakServiceImpl implements KeycloakService {
 
         if (existingRoles.stream().anyMatch(r -> r.getName().equalsIgnoreCase(oppositeRole))) {
             userResource.roles().realmLevel().remove(Collections.singletonList(oppositeRoleRepresentation));
-            log.info("Removed role {} from user {}", oppositeRole, keycloakId);
+            log.info(REMOVE_ROLE, oppositeRole, keycloakId);
         }
 
         userResource.roles().realmLevel().add(Collections.singletonList(newRole));
-        log.info("Assigned role {} to user {}", role, keycloakId);
+        log.info(ASSIGN_ROLE, role, keycloakId);
     }
 
     @Override
@@ -119,16 +125,15 @@ public class KeycloakServiceImpl implements KeycloakService {
     public User findById(String keycloakId) {
         UserResource userResource = getUserResource(keycloakId);
         UserRepresentation userRepresentation = userResource.toRepresentation();
-        User user = User.builder()
+
+        return User.builder()
                 .username(userRepresentation.getUsername())
                 .email(userRepresentation.getEmail())
-                .fullName(userRepresentation.getAttributes().get("fullName").getFirst())
-                .phoneNumber(userRepresentation.getAttributes().get("phoneNumber").getFirst())
+                .fullName(userRepresentation.getAttributes().get(FULL_NAME).getFirst())
+                .phoneNumber(userRepresentation.getAttributes().get(PHONE_NUMBER).getFirst())
                 .role(getUserRole(userResource))
                 .keycloakId(keycloakId)
                 .build();
-
-        return user;
     }
 
     @Transactional

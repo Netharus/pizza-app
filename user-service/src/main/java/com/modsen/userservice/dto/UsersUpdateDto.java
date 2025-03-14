@@ -1,19 +1,20 @@
 package com.modsen.userservice.dto;
 
+import com.modsen.userservice.exceptions.ErrorMessages;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record UsersUpdateDto(
-        @NotBlank(message = "username can't be empty")
+        @NotBlank(message = ErrorMessages.USERNAME_CANNOT_BE_EMPTY)
         String username,
         @Email
         String email,
-        @NotBlank(message = "full name can't be empty")
+        @NotBlank(message = ErrorMessages.FULL_NAME_CANNOT_BE_EMPTY)
         String fullName,
         @Pattern(
-                regexp = "^\\+375(29|33|25)\\d{7}$",
-                message = "Phone number must be in the format +375XX0000000, where XX is 29, 33, or 25"
+                regexp = ErrorMessages.PHONE_REGEXP,
+                message = ErrorMessages.INCORRECT_PHONE_NUMBER
         )
         String phoneNumber
 ) {
