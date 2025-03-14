@@ -23,15 +23,18 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    private static final String APP_ERROR = "App error:";
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleException(Exception ex, HttpServletRequest request) {
-        log.error("App error:", ex);
+        log.error(APP_ERROR, ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request.getRequestURI()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<ErrorResponseDto>> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        log.error("App error:", ex);
+        log.error(APP_ERROR, ex);
 
         List<ErrorResponseDto> errors = new ArrayList<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
@@ -42,25 +45,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleCategoryNotFoundException(OrderNotFoundException ex, HttpServletRequest request) {
-        log.error("App error:", ex);
+        log.error(APP_ERROR, ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException ex, HttpServletRequest request) {
-        log.error("App error:", ex);
+        log.error(APP_ERROR, ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponseDto> handleConflictException(ConflictException ex, HttpServletRequest request) {
-        log.error("App error:", ex);
+        log.error(APP_ERROR, ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
-        log.error("App error:", ex);
+        log.error(APP_ERROR, ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI()), HttpStatus.FORBIDDEN);
     }
 
@@ -74,7 +77,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidOrderStatusException.class)
     public ResponseEntity<ErrorResponseDto> handleInvalidOrderStatusException(InvalidOrderStatusException ex, HttpServletRequest request) {
-        log.error("App error:", ex);
+        log.error(APP_ERROR, ex);
         return new ResponseEntity<>(new ErrorResponseDto(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI()), HttpStatus.BAD_REQUEST);
     }
 }

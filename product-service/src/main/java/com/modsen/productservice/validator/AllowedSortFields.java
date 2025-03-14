@@ -14,6 +14,7 @@ public enum AllowedSortFields {
     NAME("name"),
     PRICE("price"),
     CATEGORY_NAME("category.name"),
+    AVAILABLE("available"),
     CATEGORY_ID("category.id");
 
     private final String fieldName;

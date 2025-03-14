@@ -63,6 +63,12 @@ spring:
             - Path=/users/**
           filters:
             - PrefixPath=/api/v1
+        - id: registration
+          uri: lb://user-service
+          predicates:
+            - Path=/registration
+          filters:
+            - PrefixPath=/api/v1/users
       default-filters: DataTransferFilter
   security:
     oauth2:

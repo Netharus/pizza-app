@@ -1,5 +1,6 @@
 package com.modsen.productservice.dto;
 
+import com.modsen.productservice.exception.ErrorMessages;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -7,12 +8,13 @@ import lombok.Builder;
 
 @Builder
 public record ProductUpdateDto(
-        @NotNull(message = "Category id can't be null")
+        @NotNull(message = ErrorMessages.PRODUCT_ID_CANT_BE_EMPTY)
         Long id,
-        @NotBlank(message = "Category name can't be empty")
+        @NotBlank(message = ErrorMessages.PRODUCT_NAME_CANT_BE_EMPTY)
         String name,
-        @Positive(message = "Price can't be negative or equal to zero")
+        @Positive(message = ErrorMessages.PRICE_CANT_BE_NEGATIVE)
         double price,
+        @NotNull(message = ErrorMessages.CATEGORY_ID_CANT_BE_EMPTY)
         Long categoryId
 ) {
 }

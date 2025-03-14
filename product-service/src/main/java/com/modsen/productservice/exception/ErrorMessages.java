@@ -14,5 +14,12 @@ public final class ErrorMessages {
     public static final String UNEXPECTED_ERROR = "Unexpected error: ";
     public static final String PARSE_ERROR = "Unexpected error: ";
     public static final String PAGEABLE_VALIDATION_ERROR = "There are no fields with this name %s";
-
+    public static final String CATEGORY_NAME_CANT_BE_EMPTY = "Category name cannot be empty";
+    public static final String CATEGORY_ID_CANT_BE_EMPTY = "Category id cannot be empty";
+    public static final String PRODUCT_NAME_CANT_BE_EMPTY = "Product name cannot be empty";
+    public static final String PRODUCT_ID_CANT_BE_EMPTY = "Product id cannot be empty";
+    public static final String PRICE_CANT_BE_NULL = "Price can't be null";
+    public static final String PRICE_CANT_BE_NEGATIVE = "Price can't be negative or equal to zero";
+    public static final String PRODUCT_IDS_LIST_CANT_BE_EMPTY = "Product ids list cannot be empty";
+    public static final String INVALID_FIELD_NAME = "Invalid field name";
 }

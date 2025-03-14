@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class KafkaProducer {
 
     private final static String PRODUCT_DATA_TOPIC = "product-data-transfer-topic";
+    private final static String MESSAGE_SENT = "Sent message successfully{}with offset{}";
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -28,7 +29,7 @@ public class KafkaProducer {
                 kafkaTemplate.send(topic, key, message);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
-                log.info("Sent message successfully{}with offset{}",
+                log.info(MESSAGE_SENT,
                         message.toString(),
                         result.getRecordMetadata().offset());
             } else {

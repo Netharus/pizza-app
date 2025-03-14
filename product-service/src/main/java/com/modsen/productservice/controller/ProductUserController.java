@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,9 +53,20 @@ public class ProductUserController {
         return categoryService.findAll(pageable, keyword);
     }
 
+    @GetMapping("/categories/list/names")
+    public ResponseEntity<List<String>> findAllCategories() {
+        return ResponseEntity.ok(categoryService.getCategoriesNameList());
+    }
+
     @GetMapping("/categories/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CategoryResponseDto findCategoryById(@PathVariable Long id) {
         return categoryService.getCategoryResponseDtoById(id);
     }
+
+    @GetMapping("/by/categories")
+    public ResponseEntity<?> findAllByCategory(@RequestParam(defaultValue = "") String keyword) {
+        return ResponseEntity.ok(productService.findAllByCategory(keyword));
+    }
+
 }

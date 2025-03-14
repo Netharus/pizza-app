@@ -1,15 +1,16 @@
 package com.modsen.orderservice.dto;
 
+import com.modsen.orderservice.exception.ErrorMessages;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 
 @Builder
 public record OrderItemCreateDto(
-        @NotNull(message = "Product id can't be empty")
+        @NotNull(message = ErrorMessages.PRODUCT_ID_CANNOT_BE_EMPTY)
         Long productId,
-        @NotNull(message = "Quantity can't be null")
-        @Positive(message = "Quantity can't be negative or equal to zero")
+        @NotNull(message = ErrorMessages.QUANTITY_CANNOT_BE_NULL)
+        @Positive(message = ErrorMessages.QUANTITY_CANNOT_BE_NEGATIVE)
         int quantity
 ) {
 }

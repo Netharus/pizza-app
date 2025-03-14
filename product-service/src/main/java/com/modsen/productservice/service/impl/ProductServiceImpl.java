@@ -63,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageContainerDto<ProductResponseDto> findAllForUser(Pageable pageable, String keyword) {
-        return productMapper.toProductPageContainerDto(productRepository.findAllByAvailableIsTrue(pageable,keyword));
+        return productMapper.toProductPageContainerDto(productRepository.findAllByAvailableIsTrue(pageable, keyword));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
         product.setName(updatedProduct.getName());
         product.setPrice(updatedProduct.getPrice());
 
-        if (updatedProduct.getCategory() != null) {
+        if (productUpdateDto.categoryId() != null) {
             product.setCategory(category);
         }
         kafkaProducer.sendActualData(new ProductResponseForOrderDto(Map.of(product.getId(),
@@ -161,6 +161,12 @@ public class ProductServiceImpl implements ProductService {
         Product product = getProduct(id);
         product.setAvailable(!product.getAvailable());
         return productMapper.toProductResponseDto(productRepository.save(product));
+    }
+
+    @Override
+    @Transactional
+    public List<ProductResponseDto> findAllByCategory(String keyword) {
+        return productMapper.toProductResponseDtoList(productRepository.findByOrderByCategoryAsc(keyword));
     }
 
 

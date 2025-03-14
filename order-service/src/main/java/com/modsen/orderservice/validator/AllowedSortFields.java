@@ -11,10 +11,9 @@ import java.util.stream.Collectors;
 @Getter
 public enum AllowedSortFields {
     ID("id"),
-    NAME("name"),
-    PRICE("price"),
-    CATEGORY_NAME("category.name"),
-    CATEGORY_ID("category.id");
+    USER_ID("userId"),
+    ORDER_DATE("orderDate"),
+    STATUS("status");
 
     private final String fieldName;
 

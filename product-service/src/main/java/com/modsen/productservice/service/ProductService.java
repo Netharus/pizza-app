@@ -33,4 +33,6 @@ public interface ProductService {
     ProductResponseForOrderDto getProductData(ProductRequestDto productRequestDto);
 
     ProductResponseDto changeStatus(Long id);
+
+    List<ProductResponseDto> findAllByCategory(String keyword);
 }
