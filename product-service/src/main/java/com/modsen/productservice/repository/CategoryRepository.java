@@ -12,12 +12,12 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    @Query("SELECT c FROM Category c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    @Query("SELECT c FROM Category c WHERE  cast(c.id as string) like lower(concat('%',:keyword,'%')) or LOWER(c.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Category> findAll(Pageable pageable, @Param("keyword") String keyword);
 
     boolean existsByName(String name);
 
     boolean existsByNameAndIdNot(String name, Long id);
 
-    List<Category> findCategoryByOrderByNameAsc();
+    List<Category> findByProductsIsNotEmptyOrderByNameAsc();
 }

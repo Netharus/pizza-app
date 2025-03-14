@@ -112,7 +112,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<String> getCategoriesNameList() {
-        return categoryRepository.findCategoryByOrderByNameAsc().stream().map(Category::getName).toList();
+        return categoryRepository.findByProductsIsNotEmptyOrderByNameAsc().stream().map(Category::getName).toList();
     }
 
     @Transactional
