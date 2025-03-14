@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.category.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    @Query("SELECT p FROM Product p WHERE  cast(p.id as string) like lower(concat('%',:keyword,'%')) or LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.category.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Product> findAll(Pageable pageable, @Param("keyword") String keyword);
 
     boolean existsByName(String name);
