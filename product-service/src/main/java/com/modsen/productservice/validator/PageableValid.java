@@ -1,5 +1,6 @@
 package com.modsen.productservice.validator;
 
+import com.modsen.productservice.exception.ErrorMessages;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -12,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PageableValid {
-    String message() default "Invalid field name";
+    String message() default ErrorMessages.INVALID_FIELD_NAME;
 
     Class<?>[] groups() default {};
 

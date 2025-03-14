@@ -1,14 +1,15 @@
 package com.modsen.productservice.dto;
 
+import com.modsen.productservice.exception.ErrorMessages;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record CategoryUpdateDto(
-        @NotNull(message = "Category id can't be null")
+        @NotNull(message = ErrorMessages.CATEGORY_ID_CANT_BE_EMPTY)
         Long id,
-        @NotBlank(message = "Category name can't be empty")
+        @NotBlank(message = ErrorMessages.CATEGORY_NAME_CANT_BE_EMPTY)
         String name
 ) {
 }
