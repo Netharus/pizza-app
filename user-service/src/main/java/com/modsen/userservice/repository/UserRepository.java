@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "or lower(u.phoneNumber) like lower(concat('%',:keyword,'%'))")
     Page<User> findAll(Pageable pageable, @Param("keyword") String keyword);
 
-    Optional<User> findByEmailOrUsernameOrPhoneNumber(String email, String username, String phoneNumber);
+    List<User> findByEmailOrUsernameOrPhoneNumber(String email, String username, String phoneNumber);
 
     void deleteByKeycloakId(String keycloakId);
 }

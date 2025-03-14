@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ProfileResponseDto getProfile(String userId) {
         return userMapper.toProfileDto(getUserByKeycloakId(userId));
     }
@@ -107,23 +108,40 @@ public class UserServiceImpl implements UserService {
         return userMapper.fromUserToUsersResponseDto(user);
     }
 
+    @Override
+    @Transactional
+    public Boolean isAdmin(String userId) {
+        return getUserByKeycloakId(userId).getRole().equals(Role.ADMIN);
+    }
+
     private void isUserUnique(User user) {
-        userRepository.findByEmailOrUsernameOrPhoneNumber(
+        List<User> users = userRepository.findByEmailOrUsernameOrPhoneNumber(
                 user.getEmail(), user.getUsername(), user.getPhoneNumber()
-        ).ifPresent(existingUser -> checkUniqueness(user, existingUser));
+        );
+        validateUserUniqueness(user, users);
     }
 
     private void isUserUniqueUpdate(User updatedUser, String keycloakId) {
-        userRepository.findByEmailOrUsernameOrPhoneNumber(
-                updatedUser.getEmail(), updatedUser.getUsername(), updatedUser.getPhoneNumber()
-        ).ifPresent(existingUser -> {
-            if (!existingUser.getKeycloakId().equals(keycloakId)) {
-                checkUniqueness(updatedUser, existingUser);
-            }
-        });
+        List<User> users = userRepository.findByEmailOrUsernameOrPhoneNumber(
+                updatedUser.getEmail(), updatedUser.getUsername(), updatedUser.getPhoneNumber());
+        users.removeIf(user -> user.getKeycloakId().equals(keycloakId));
+        validateUserUniqueness(updatedUser, users);
     }
 
-    private void checkUniqueness(User user, User existingUser) {
+    private void validateUserUniqueness(User user, List<User> users) {
+        if (!users.isEmpty()) {
+            String conflicts = users.stream()
+                    .map(existingUser -> checkUniqueness(user, existingUser))
+                    .filter(conflict -> !conflict.isEmpty())
+                    .collect(Collectors.joining(", "));
+
+            if (!conflicts.isEmpty()) {
+                throw new AlreadyExistsException(conflicts);
+            }
+        }
+    }
+
+    private String checkUniqueness(User user, User existingUser) {
         List<String> conflicts = new ArrayList<>();
 
         if (existingUser.getEmail().equals(user.getEmail())) {
@@ -135,8 +153,7 @@ public class UserServiceImpl implements UserService {
         if (existingUser.getPhoneNumber().equals(user.getPhoneNumber())) {
             conflicts.add(String.format(ErrorMessages.USER_ALREADY_EXISTS_PHONE_NUMBER, user.getPhoneNumber()));
         }
-
-        throw new AlreadyExistsException(String.join(", ", conflicts));
+        return String.join(", ", conflicts);
     }
 
     @Transactional
