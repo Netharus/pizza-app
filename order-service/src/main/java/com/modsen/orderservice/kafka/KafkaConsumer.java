@@ -1,6 +1,7 @@
 package com.modsen.orderservice.kafka;
 
 import com.modsen.orderservice.dto.ProductResponseForOrderDto;
+import com.modsen.orderservice.exception.ErrorMessages;
 import com.modsen.orderservice.service.OrderItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ public class KafkaConsumer {
     private final static String PRODUCT_DATA_TOPIC = "product-data-transfer-topic";
 
     @RetryableTopic
-    @KafkaListener(topics = "product-data-transfer-topic")
+    @KafkaListener(topics = PRODUCT_DATA_TOPIC)
     @Transactional
     public void consume(ProductResponseForOrderDto productResponseForOrderDto) {
         log.info(productResponseForOrderDto.toString());
@@ -28,6 +29,6 @@ public class KafkaConsumer {
 
     @DltHandler
     public void consumeDLT() {
-        log.error("Something went wrong");
+        log.error(ErrorMessages.SOMETHING_WENT_WRONG);
     }
 }
