@@ -14,7 +14,9 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query("select o from Order o where cast(o.id as string) like lower(concat('%',:keyword,'%')) or lower(o.status) like lower(concat('%',:keyword,'%')) ")
+    @Query("select o from Order o where cast(o.id as string) like lower(concat('%',:keyword,'%')) " +
+            "or lower(o.userId) like lower(concat('%',:keyword,'%')) " +
+            "or lower(o.status) like lower(concat('%',:keyword,'%')) ")
     Page<Order> findAll(Pageable pageable, @Param("keyword") String keyword);
 
     Page<Order> findByUserId(String id, Pageable pageable);
