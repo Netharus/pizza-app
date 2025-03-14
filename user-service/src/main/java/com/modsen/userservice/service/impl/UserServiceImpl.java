@@ -11,7 +11,6 @@ import com.modsen.userservice.dto.UsersUpdateDto;
 import com.modsen.userservice.exceptions.AlreadyExistsException;
 import com.modsen.userservice.exceptions.ErrorMessages;
 import com.modsen.userservice.exceptions.ResourceNotAvailable;
-import com.modsen.userservice.exceptions.UserNotFoundException;
 import com.modsen.userservice.mapper.UserMapper;
 import com.modsen.userservice.repository.UserRepository;
 import com.modsen.userservice.service.KeycloakService;
@@ -33,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final OrderClient orderClient;
 
     @Override
+    @Transactional
     public UsersResponseDto findUserById(String keycloakId) {
         return userMapper
                 .fromUserToUsersResponseDto(getUserByKeycloakId(keycloakId));
@@ -45,6 +45,13 @@ public class UserServiceImpl implements UserService {
         isUserUnique(user);
         user.setKeycloakId(keycloakService.createUser(usersCreateDto));
         return userMapper.fromUserToUsersResponseDto(userRepository.save(user));
+    }
+
+    @Transactional
+    @Override
+    public User createUserFromKeycloak(User user) {
+        isUserUnique(user);
+        return userRepository.save(user);
     }
 
     @Override
@@ -103,9 +110,7 @@ public class UserServiceImpl implements UserService {
     private void isUserUnique(User user) {
         userRepository.findByEmailOrUsernameOrPhoneNumber(
                 user.getEmail(), user.getUsername(), user.getPhoneNumber()
-        ).ifPresent(existingUser -> {
-            checkUniqueness(user, existingUser);
-        });
+        ).ifPresent(existingUser -> checkUniqueness(user, existingUser));
     }
 
     private void isUserUniqueUpdate(User updatedUser, String keycloakId) {
@@ -134,10 +139,14 @@ public class UserServiceImpl implements UserService {
         throw new AlreadyExistsException(String.join(", ", conflicts));
     }
 
-    private User getUserByKeycloakId(String keycloakId) {
+    @Transactional
+    protected User getUserByKeycloakId(String keycloakId) {
         return userRepository
                 .findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new UserNotFoundException(String.format(ErrorMessages.USER_NOT_FOUND, keycloakId)));
+                .orElseGet(() -> {
+                    User user = keycloakService.findById(keycloakId);
+                    return createUserFromKeycloak(user);
+                });
     }
 
 }

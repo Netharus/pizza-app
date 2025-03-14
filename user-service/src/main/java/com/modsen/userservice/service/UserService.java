@@ -1,5 +1,6 @@
 package com.modsen.userservice.service;
 
+import com.modsen.userservice.domain.User;
 import com.modsen.userservice.dto.PageContainerDto;
 import com.modsen.userservice.dto.ProfileResponseDto;
 import com.modsen.userservice.dto.UsersCreateDto;
@@ -12,6 +13,8 @@ public interface UserService {
 
     UsersResponseDto createUser(UsersCreateDto usersCreateDto);
 
+    User createUserFromKeycloak(User user);
+
     UsersResponseDto updateUser(String keycloakId, UsersUpdateDto usersUpdateDto);
 
     PageContainerDto<UsersResponseDto> findAll(Pageable pageable, String keyword);
@@ -21,4 +24,6 @@ public interface UserService {
     ProfileResponseDto getProfile(String userId);
 
     UsersResponseDto assignRole(String keycloakId, String role);
+
+
 }
