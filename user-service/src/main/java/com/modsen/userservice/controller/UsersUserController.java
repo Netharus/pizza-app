@@ -5,6 +5,7 @@ import com.modsen.userservice.dto.UsersCreateDto;
 import com.modsen.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,5 +33,11 @@ public class UsersUserController {
     @ResponseStatus(HttpStatus.CREATED)
     public void getCurrentUserRegistration(@RequestBody UsersCreateDto user) {
         userService.createUser(user);
+    }
+
+    @GetMapping("/isAdmin")
+    ResponseEntity<Boolean> isAdmin(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
+        return ResponseEntity.ok(userService.isAdmin(userId));
     }
 }

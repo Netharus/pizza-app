@@ -26,4 +26,5 @@ public interface UserService {
     UsersResponseDto assignRole(String keycloakId, String role);
 
 
+    Boolean isAdmin(String userId);
 }
