@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: v2-add-product-name-to-order-item.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: v2-change-type-of-user-id.yaml
+      relativeToChangelogFile: true

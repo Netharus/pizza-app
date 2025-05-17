@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: v1-1-1
+      author: Mikhail Kondratsiuk
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: orders
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_date
+                  type: timestamp(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    checkConstraint: "status IN ('PENDING','CONFIRMED','SHIPPED','DELIVERED','CANCELLED')"
